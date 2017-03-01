@@ -1,0 +1,43 @@
+virtuelle Speicherverwaltung (32-Bit)
+Man arbeitet mit flat memory model bzw. dem protected Mode. Die
+Zusammenarbeit zwischen dem Prozessor und dem Betriebsystemskern
+ermöglicht, dass jedem Prozess einen Adressraum von 4GB (2^32) zur
+verfügung steht. Die virtuelle Speicherverwaltung arbeitet nicht mehr
+kombiniert mit einer Segment- und einer Offsetadresse, sondern man
+benutzt eine einzige 32-Bit große (Offset-)Adresse für den kompletten
+Adressraum.
+
+Paging
+
+
+Heap-Prozeß
+
+
+Bufferoverflow
+
+
+Stackoverflow
+
+
+Heapoverflow
+
+
+Integeroverflow
+
+
+DEP
+
+
+Angriffe DEP
+
+
+ASLR
+
+
+Angriffe ASLR
+
+
+Finden von Overflows
+
+
+Vermeiden von Overflows

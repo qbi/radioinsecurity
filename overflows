@@ -37,6 +37,24 @@ ASLR
 Angriffe ASLR
 
 
+Stack Smashing Protector (ehemals ProPolice)
+
+
+Stack Guard
+
+
+Syscall-Filtering (https://en.wikipedia.org/wiki/Seccomp)
+
+
+Container (Chroot, LXC, Jails, ...)
+
+
+Sandboxing (Apps, Browser, Java, ...)
+
+
+Jailbreak
+
+
 Finden von Overflows
 
 

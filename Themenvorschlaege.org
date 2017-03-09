@@ -1,0 +1,14 @@
+* Themen für Sendungen
+
+Wir haben von verschiedenen Leuten Themenwünsche erhalten. Die werden zunächst in der Datei gesammelt und dann hoffentlich abgearbeitet. ;)
+
+  - Vor- und Nachteile von Yubikeys
+  - Smartcards
+  - Verschlüsselung
+    + überblicksmäßige Liste der gängigen Verfahren und Algorithmen
+    + Wo bzw. wo nicht sollte man Verfahren einsetzen
+    + Einsatz von Prüfsummen
+    + Signieren und Verifizieren von Software
+  - Knigge zum Umgang mit Tor
+  - sinnvolle Verwendung von Clouddiensten
+  - Nachrichtenaustausch mit BitMessage

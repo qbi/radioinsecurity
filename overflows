@@ -6,39 +6,41 @@ dass jedem Prozess einen Adressraum von 4GB (2^32) zur verfügung steht. Die
 virtuelle Speicherverwaltung arbeitet nicht mehr kombiniert mit einer Segment-
 und einer Offsetadresse (DOS), sondern man benutzt eine einzige 32-Bit große
 (Offset-)Adresse für den kompletten Adressraum. Der Systemkern setzt beim Start
-einer Awendung einen 4GByte umfassenden Adressraum. Dies ist auch der Fall, wenn
-gar keine 4 GByte RAM zur verfügung stehen. Eine Anwendung belegt nur so viel
-Speicher, wie der Programmcode und die zugehörigen Daten benötigen. Eine
+einer Awendung einen 4GByte umfassenden Adressraum. Dies ist auch der Fall,
+wenn gar keine 4 GByte RAM zur verfügung stehen. Eine Anwendung belegt nur so
+viel Speicher, wie der Programmcode und die zugehörigen Daten benötigen. Eine
 Anwendung kann später weiteren Speicher anfordern, dies ist der virtuellen
-Speichervarwaltung zu verdanken. Verwaltet wird die virtuelle Speicherverwaltung
-durch den Systemkern und basiert auf einem grundlegenden Mechanismus der
-Speicheradressierung des Prozessors. Oft ist nicht der gesamte virtuelle
-Speicher einer Anwendung physikalisch verfügbar, da sich eine Anwedung in der
-Regel nur in Teilen des Codes oder der Daten bewegt. So ist es Möglich das man
-Teile des Arbeitspeichers auf einer Festplatte auslagern kann. Zugriffe auf
-ausgelagerten Speicher werden vom Prozessor abgefangen und ausgelagerte Teile
-werden von ihm erst wieder in den Arbeitsspeicher geladen. Die Anwendung selbst
-bekommt von diesem Vorgang nichts mit. Damit das Ein- und Auslagern möglichst
-effizent ist, teilt der Prozessor den virtuellen Speicher in 4 KByte große
-Abschnitte, sogenannte Pages, auf. Wann immer Maschinencode auf einen Adressraum
-zugreifen will berechnet der Prozessor erst ein mal aus der Adresse die Nummer
-der Page. Er bedient sich dazu der Page-Tabellen auch Page-Directories genannt.
-Über sie wird der Adressraum Stück für Stück auf Pages im physikalischen
-Speicher verteilt. Der Prozessor gibt das Format dieser Tabellen vor aber sie
-werden vom Betriebssystem verwaltet. In dem jeweiligen Eintrag der Page-Tabelle
-schaut der Prozessor, ob sich die Page im physikalischen Speicher befindet. Ein
-Eintrag in einer Page-Tabelle enthält für diesen Zweck verschiedene Flags.
-Sollte Speicher ausgelagert sein, so wird diesem dem Systemkern gemeldet,
-welcher sich um das Nachladen der Pages kümmert. Ist der komplette physikalische
-Speicher in Benutzung, so muss müssen erst andere Pages ausgelagert werden. Was
-ein Programm an durchgängigen Adressraum sieht erstreckt sich so in
-Wirklichkeit über viele Pages, welche an ganz unterschiedlichen Stellen im
-physikalischen Speicher existieren. Der Speicher einer Anwendung kann bis zu
-Unkenntlichkeit fragmentiert sein, doch es wird ihr verborgen bleiben, weil Sie
-keinen Speicherzugriff ausführen kann, ohne das der Prozessor dies bemerken
-würde. Da manche ausgelagerte Daten eventuell zeitnah wieder benötigt werden,
-versucht das Betriebssystem dies zu erahnen und läd manche Daten schon wieder in
-den Speicher, bevor versucht wurde auf diese zu zugreifen.
+Speichervarwaltung zu verdanken. Verwaltet wird die virtuelle
+Speicherverwaltung durch den Systemkern und basiert auf einem grundlegenden
+Mechanismus der Speicheradressierung des Prozessors. Oft ist nicht der gesamte
+virtuelle Speicher einer Anwendung physikalisch verfügbar, da sich eine
+Anwedung in der Regel nur in Teilen des Codes oder der Daten bewegt. So ist es
+Möglich das man Teile des Arbeitspeichers auf einer Festplatte auslagern kann.
+Zugriffe auf ausgelagerten Speicher werden vom Prozessor abgefangen und
+ausgelagerte Teile werden von ihm erst wieder in den Arbeitsspeicher geladen.
+Die Anwendung selbst bekommt von diesem Vorgang nichts mit. Damit das Ein- und
+Auslagern möglichst effizent ist, teilt der Prozessor den virtuellen Speicher
+in 4 KByte große Abschnitte, sogenannte Pages, auf. Wann immer Maschinencode
+auf einen Adressraum zugreifen will berechnet der Prozessor erst ein mal aus
+der Adresse die Nummer der Page. Er bedient sich dazu der Page-Tabellen auch
+Page-Directories genannt.  Über sie wird der Adressraum Stück für Stück auf
+Pages im physikalischen Speicher verteilt. Der Prozessor gibt das Format dieser
+Tabellen vor aber sie werden vom Betriebssystem verwaltet. In dem jeweiligen
+Eintrag der Page-Tabelle schaut der Prozessor, ob sich die Page im
+physikalischen Speicher befindet. Ein Eintrag in einer Page-Tabelle enthält für
+diesen Zweck verschiedene Flags, die unter anderem definieren, auf welche Art
+auf die Pages zugegriffen werden darf (read-only, ...). Sollte Speicher
+ausgelagert sein, so wird diesem dem Systemkern gemeldet, welcher sich um das
+Nachladen der Pages kümmert. Ist der komplette physikalische Speicher in
+Benutzung, so muss müssen erst andere Pages ausgelagert werden. Was ein
+Programm an durchgängigen Adressraum sieht erstreckt sich so in Wirklichkeit
+über viele Pages, welche an ganz unterschiedlichen Stellen im physikalischen
+Speicher existieren. Der Speicher einer Anwendung kann bis zu Unkenntlichkeit
+fragmentiert sein, doch es wird ihr verborgen bleiben, weil Sie keinen
+Speicherzugriff ausführen kann, ohne das der Prozessor dies bemerken würde. Da
+manche ausgelagerte Daten eventuell zeitnah wieder benötigt werden, versucht
+das Betriebssystem dies zu erahnen und läd manche Daten schon wieder in den
+Speicher, bevor versucht wurde auf diese zu zugreifen.
 
 Paging
 

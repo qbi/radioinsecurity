@@ -40,7 +40,12 @@ fragmentiert sein, doch es wird ihr verborgen bleiben, weil Sie keinen
 Speicherzugriff ausführen kann, ohne das der Prozessor dies bemerken würde. Da
 manche ausgelagerte Daten eventuell zeitnah wieder benötigt werden, versucht
 das Betriebssystem dies zu erahnen und läd manche Daten schon wieder in den
-Speicher, bevor versucht wurde auf diese zu zugreifen.
+Speicher, bevor versucht wurde auf diese zu zugreifen. Nicht der komplette
+Adressraum von 4GB steht aber der Anwendung zur Verfügung. Pages von Libraries
+z.B. können in mehreren Anwendungen zur verfügung stehen und eine Instanz einer
+Library benötigt auch einen Datenbereich. Adressen größer 3GB sind dem
+Systemkern vorbehalten, somit ist anzunehmen, das wenn die CPU in diesen
+Adressraum wechselt, sie auch von Ring-3 zu Ring-0 wechselt.
 
 Paging
 

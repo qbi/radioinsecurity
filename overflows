@@ -30,7 +30,7 @@ Eintrag der Page-Tabelle schaut der Prozessor, ob sich die Page im
 physikalischen Speicher befindet. Ein Eintrag in einer Page-Tabelle enthält für
 diesen Zweck verschiedene Flags, die unter anderem definieren, auf welche Art
 auf die Pages zugegriffen werden darf (read-only, …). Sollte Speicher
-ausgelagert sein, so wird diesem dem Systemkern gemeldet, welcher sich um das
+ausgelagert sein, so wird dies dem Systemkern gemeldet, welcher sich um das
 Nachladen der Pages kümmert. Ist der komplette physikalische Speicher in
 Benutzung, so muss müssen erst andere Pages ausgelagert werden. Was ein
 Programm an durchgängigen Adressraum sieht erstreckt sich so in Wirklichkeit
@@ -43,12 +43,36 @@ das Betriebssystem dies zu erahnen und läd manche Daten schon wieder in den
 Speicher, bevor versucht wurde auf diese zu zugreifen. Nicht der komplette
 Adressraum von 4GB steht aber der Anwendung zur Verfügung. Pages von Bibliotheken
 z.B. können in mehreren Anwendungen zur verfügung stehen und eine Instanz einer
-Library benötigt auch einen Datenbereich. Adressen größer 3GB sind dem
+Bibliothek benötigt auch einen Datenbereich. Adressen größer 3GB sind dem
 Systemkern vorbehalten, somit ist anzunehmen, das wenn die CPU in diesen
 Adressraum wechselt, sie auch von Ring-3 zu Ring-0 wechselt.
 
 Paging
-
+--------------------------------------------------------------------------------
+Paging ist ein intergraler Bestandteil des Protected Mode und seit dem 80386
+verfügbar. Für den Einsatz des Paging-Mechanismus ist das PG-Bit im
+Control-Register 0 (CR0) des Prozessors verantwortlich. Dieses Bit steht auf 0
+nach dem das System im Real-Mode startet, hier werden lineare Speicheradressen
+direkt auf physikalische Adressen abgebildet und Paging findet noch nicht statt.
+Schalte das Betriebssystem den Prozessor in den Protected-Mode, so setzt es
+dieses Bit auf 1. Jede Adresse, die der Prozessor bezüglich eines
+Maschinenbefehls verarbeitet, wird in diesem Modus erst einer Page zugeordnet.
+Ein Speicherzugriff wird ab jetzt auf eine Page umgeleitet. Die Größe einer
+Page beträgt 4 kB und jede Page beginnt an einer durch 4 kB teilbaren
+physikalischen Adresse. Der Adressraum wird dadurch in 2^20 verschiedene Pages
+aufgeteilt, die jeweils 2^12 Byte (4 kB) umfassen. Die Ausrichtung auf 4 kB
+ermöglicht, dass die untere 12 Bitgrenze dafür sorgt, dass lineare Adressen
+und physikalische Adressen identisch sind. Sie stellen eine Art Offset der Page
+da. Die oberen 20 Bit der linearen Adresse werden für die Nummerierung der Page
+verwendet. Diese 20 Bit werden isoliert und als Index in der Page-Table
+verwendet, aus welcher die physikalische Adresse entnommen wird.  Die Einträge
+in der Page-Table sind 32 Bit breit, es werden aber nur 20 Bit benötigt, denn
+sie muss an einer durch 4 kB teilbaren physikalischen Speicherstelle beginnen.
+Egal welche Page man nimmt, die unteren 12 Bit des Index sind deshalb immer 0.
+Somit werden dort die verschiedenen Flags untergebracht, welche z.B. definieren
+ob eine Page ausgelagert ist. Damit für eine komplette Page-Table keine
+kompletten 4 MB verwendet werden müssen, wurde der Mechanismus von Intel etwas
+verfeinert...
 
 Heap-Prozeß
 

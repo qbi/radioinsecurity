@@ -104,6 +104,12 @@ PIE-Flag
 Angriffe ASLR
 
 
+Stack-Cookie
+
+
+CFI
+
+
 Stack Smashing Protector (ehemals ProPolice)
 
 

@@ -1,3 +1,8 @@
+--------------------------------------------------------------------------------
+Speicher
+--------------------------------------------------------------------------------
+
+
 virtuelle Speicherverwaltung (32-Bit)
 --------------------------------------------------------------------------------
 Man arbeitet mit dem flat memory model bzw. dem protected Mode. Die
@@ -48,6 +53,7 @@ Systemkern vorbehalten, somit ist anzunehmen, das wenn die CPU in diesen
 Adressraum wechselt, sie auch von Ring-3 zu Ring-0 wechselt.
 
 https://upload.wikimedia.org/wikipedia/commons/d/dc/MMU_principle_updated.png
+
 
 Paging
 --------------------------------------------------------------------------------
@@ -104,7 +110,31 @@ realisieren ein Schutzmechanismus zwischen System-Code und User-Code oder
 markieren eine Page als schreibgeschützt. Bei Missachtung dieser Flags wird eine
 Exception ausgelöst.
 
-Heap-Prozeß
+
+Dynamischer Speicher
+--------------------------------------------------------------------------------
+Anwendungen können über verschiedene Möglichkeiten, während der Ausführung
+Speicher allokieren. Hierfür verwendet man in der Regel die Funktionen der
+entsprechenden Bibliotheken, welche die Speicheranforderung dieser Funktionen
+aus dem virtuellen Speicher bedienen. Es ist möglich Speicher zu allokieren,
+welcher sich direkt in das Paging-Konstrukt eingefügt. Diese Art wird oft
+benutzt um Dateien in den Speicher einzulesen oder große Arrays anzulegen. Es
+ist so möglich sich regelrecht Abschnitte im linearen Adressraum zu reservieren.
+Das System nutzt diese Möglichkeit, um Teile des Adressraums für sich und den
+geladenen Prozess zu reservieren. Auch der User-Code kann davon profitieren,
+überall dort, wo Datenstrukturen während der Programmausführung dynamisch
+wachsen. Dies macht Sinn, da der Erweiterungsspeicher beim Vergrößern einer
+Struktur nicht einfach hinten angehangen werden kann. Andernfalls würde ein
+höherer Aufwand mit Zeigern und verknüpften Listen betrieben werden oder man
+müsste Speicher beim Vergrößern wandern lassen. Allokierter virtuelle Speicher
+des User-Codes steht somit dem Systemkern oder verwendeten Bibliotheken nicht
+zur Verfügung. Benötigt man Speicher für Bäume und Listen, so kann man über die
+Heap-Funktionen Speicher byte-genau allokieren.
+
+
+--------------------------------------------------------------------------------
+Overflows
+--------------------------------------------------------------------------------
 
 
 Bufferoverflow
@@ -132,6 +162,9 @@ PIE-Flag
 
 
 Angriffe ASLR
+
+
+Spraying
 
 
 Stack-Cookie

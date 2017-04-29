@@ -83,11 +83,11 @@ Anstelle einer großen Page-Table für den gesamten 32-Bit-Adressraum wurde eine
 zweistufige Organisation mit mehreren Page-Tables gewählt. Ausgangspunkt ist das
 Page-Directory, über das mehrere kleinere Page-Tables verwaltet werden. Es
 werden die oberen 10 Bit der linearen Adresse als Index in Page-Directory
-verstanden, welches aus 1024 Einträgen besteht. Die Adresse des Page-Directory
+verstanden, welches aus 1024 Einträgen besteht. Eine Adresse des Page-Directory
 wird über das CR3-Register bereitgestellt. Die einzelnen Einträge einer
 Page-Directory enthalten Zeiger mit den Adressen der verschiedenen Page-Tables.
 Die Nummer des Eintrags, welcher für die Umrechnung der Adresse herangezogen
-wird, ergibt sich aus dem Besitz 12-21 der linearen Adresse. Eine lineare
+wird, ergibt sich aus dem Besitz 12–21 der linearen Adresse. Eine lineare
 Adresse wird so in 2 Teile aufgespalten. Das Page-Directory und jede
 Page-Tabelle nimmt so die Adressen von 1024 Pages auf. Jeder Eintrag in der
 Page-Directory deckt so einen Bereich von 4 MB innerhalb des linearen
@@ -103,7 +103,7 @@ Basisadresse der Page im Speicher zu initialisieren. Das Acccess-Flag wird
 gesetzt, wenn auf eine Page das erste Mal zugegriffen wurde. So kann das
 Betriebssystem später besser entscheiden, welche Pages zuerst ausgelagert werden
 sollen, insofern der physikalische Speicher knapp wird. Hier werden die
-bevorzugt, wo das Access-Flag noch auf 0 steht.  Pages, welche einen
+bevorzugt, wo das Access-Flag noch auf 0 steht. Pages, welche einen
 Schreibzugriff hatten, bei denen wird das Dirty-Bit auf 1 gesetzt. Es ist
 einfacher Pages zu laden, welche unverändert sind. Andere Flags realisieren ein
 Schutzmechanismus zwischen System-Code und User-Code oder markieren eine Page
@@ -129,7 +129,27 @@ höherer Aufwand mit Zeigern und verknüpften Listen betrieben werden oder man
 müsste Speicher beim Vergrößern wandern lassen. Allozierter virtuelle Speicher
 des User-Codes steht somit dem Systemkern oder verwendeten Bibliotheken nicht
 zur Verfügung. Benötigt man Speicher für Bäume und Listen, so kann man über die
-Heap-Funktionen Speicher Byte-genau allozieren.
+Heap-Funktionen Speicher Byte-genau allozieren.Um dem Problem zu entgehen, das
+große reservierte Speicherabschnitte den physikalischen Speicher oder die
+Auslagerungsdatei regelrecht sprengen. Ein Prozess muss den Speicher, welchen er
+wirklich nutzen will noch commiten. Das hat den Vorteil, dass Arrays trotzdem
+sequenziell wachsen können, obwohl hier erst mal nur ein kleiner Teil des
+reservierten Speichers benutzt. Ab hier wird der dynamische Speicher im
+Page-Konstrukt wirklich angelegt. Ist der committete Bereich für die anfallenden
+Daten nicht groß genug, so wird der Prozessor eine Exception auslösen.
+
+Haldenspeicher
+--------------------------------------------------------------------------------
+Wenn man viele kleine Speicherblöcke verwalten möchte, ohne sich die Frage
+stellen zu müssen, ob dieser Speicher verfügbar ist, dann benutzt man die
+verschiedenen Heap-Funktionen. Die C-Standard-Funktionen hierzu sind zum
+Beispiel malloc(), realloc() und free(), welche auf dem entsprechenden
+Betriebssystem-API basieren.  Über das Betriebssystem-API ist es in der Regel
+möglich, mehrere Heaps mit unterschiedlichen Größen anzulegen. Der Speicher für
+Heaps wird aus dem virtuellen Adressraum der Anwendung bezogen. Die jeweiligen
+Heaps werden dann über ein Handle angesprochen. Dem Prozess-Heap gibt es bereits
+beim Start eines jeden Prozesses. Der Loader legt in ihm Informationen ab, die
+der Systemkern verwalten muss.
 
 
 --------------------------------------------------------------------------------

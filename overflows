@@ -162,10 +162,10 @@ Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
 Code-, Daten- und Heapsegment. Der Stack kann mit den Prozessorbefehlen push und
 pop be- und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern.
 Der Stack arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop
-nur das Element entladen werden welches zuletzt auf dem Stack abgelegt wurde.
-Der Stack wird in der Regel benutzt um Parameter an Prozeduraufrufe zu übergeben
+nur das Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde.
+Der Stack wird in der Regel benutzt, um Parameter an Prozeduraufrufe zu übergeben
 und diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
-auch das die lokalen Variablen eine Prozedur auf dem Stack angelegt werden,
+auch das die lokalen Variablen einer Prozedur, auf dem Stack angelegt werden,
 somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen.
 
 https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg

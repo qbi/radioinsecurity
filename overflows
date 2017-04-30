@@ -52,6 +52,8 @@ sind dem Systemkern vorbehalten, somit ist anzunehmen, das, wenn die CPU in
 diesen Adressraum wechselt, sie auch von Ring-3 zu Ring-0 wechselt.
 
 https://upload.wikimedia.org/wikipedia/commons/d/dc/MMU_principle_updated.png
+https://upload.wikimedia.org/wikipedia/commons/3/32/Virtual_address_space_and_physical_address_space_relationship.svg
+https://www.tu-chemnitz.de/urz/archiv/kursunterlagen/unix/adrspace.gif
 
 
 Paging
@@ -138,18 +140,35 @@ reservierten Speichers benutzt. Ab hier wird der dynamische Speicher im
 Page-Konstrukt wirklich angelegt. Ist der committete Bereich für die anfallenden
 Daten nicht groß genug, so wird der Prozessor eine Exception auslösen.
 
-Haldenspeicher
+
+Heap
 --------------------------------------------------------------------------------
 Wenn man viele kleine Speicherblöcke verwalten möchte, ohne sich die Frage
 stellen zu müssen, ob dieser Speicher verfügbar ist, dann benutzt man die
 verschiedenen Heap-Funktionen. Die C-Standard-Funktionen hierzu sind zum
 Beispiel malloc(), realloc() und free(), welche auf dem entsprechenden
-Betriebssystem-API basieren.  Über das Betriebssystem-API ist es in der Regel
+Betriebssystem-API basieren. Über das Betriebssystem-API ist es in der Regel
 möglich, mehrere Heaps mit unterschiedlichen Größen anzulegen. Der Speicher für
 Heaps wird aus dem virtuellen Adressraum der Anwendung bezogen. Die jeweiligen
 Heaps werden dann über ein Handle angesprochen. Dem Prozess-Heap gibt es bereits
 beim Start eines jeden Prozesses. Der Loader legt in ihm Informationen ab, die
-der Systemkern verwalten muss.
+der Systemkern verwalten muss. Der angefragte Speicher wird immer auf eine
+Page-Größe aufgerundet.
+
+
+Stack
+--------------------------------------------------------------------------------
+Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
+Code-, Daten- und Heapsegment. Der Stack kann mit den Prozessorbefehlen push und
+pop be- und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern.
+Der Stack arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop
+nur das Element entladen werden welches zuletzt auf dem Stack abgelegt wurde.
+Der Stack wird in der Regel benutzt um Parameter an Prozeduraufrufe zu übergeben
+und diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
+auch das die lokalen Variablen eine Prozedur auf dem Stack angelegt werden,
+somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen.
+
+https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg
 
 
 --------------------------------------------------------------------------------

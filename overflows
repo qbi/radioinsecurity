@@ -1,63 +1,64 @@
---------------------------------------------------------------------------------
+﻿--------------------------------------------------------------------------------
 Speicher
 --------------------------------------------------------------------------------
 
 
-virtuelle Speicherverwaltung (32-Bit)
+Virtuelle Speicherverwaltung (32-Bit)
 --------------------------------------------------------------------------------
 Man arbeitet mit dem flat memory model bzw. dem protected Mode. Die
-Zusammenarbeit zwischen dem Prozessor und dem Betriebsystemkern ermöglicht,
-dass jedem Prozess einen Adressraum von 4GB (2^32) zur verfügung steht. Die
+Zusammenarbeit zwischen dem Prozessor und dem Betriebssystemkern ermöglicht,
+dass jedem Prozess einen Adressraum von 4 GB (2^32) zur Verfügung steht. Die
 virtuelle Speicherverwaltung arbeitet nicht mehr kombiniert mit einer Segment-
 und einer Offsetadresse (DOS), sondern man benutzt eine einzige 32-Bit große
 (Offset-)Adresse für den kompletten Adressraum. Der Systemkern setzt beim Start
-einer Awendung einen 4GB umfassenden Adressraum. Dies ist auch der Fall,
-wenn gar keine 4 GB RAM zur verfügung stehen. Eine Anwendung belegt nur so
-viel Speicher, wie der Programmcode und die zugehörigen Daten benötigen. Eine
+einer Anwendung einen 4 GB umfassenden Adressraum. Dies ist auch der Fall, wenn
+gar keine 4 GB RAM zur Verfügung stehen. Eine Anwendung belegt nur so viel
+Speicher, wie der Programmcode und die zugehörigen Daten benötigen. Eine
 Anwendung kann später weiteren Speicher anfordern, dies ist der virtuellen
-Speichervarwaltung zu verdanken. Verwaltet wird die virtuelle
-Speicherverwaltung durch den Systemkern und basiert auf einem grundlegenden
-Mechanismus der Speicheradressierung des Prozessors. Oft ist nicht der gesamte
-virtuelle Speicher einer Anwendung physikalisch verfügbar, da sich eine
-Anwedung in der Regel nur in Teilen des Codes oder der Daten bewegt. So ist es
-Möglich das man Teile des Arbeitspeichers auf einer Festplatte auslagern kann.
-Zugriffe auf ausgelagerten Speicher werden vom Prozessor abgefangen und
-ausgelagerte Teile werden von ihm erst wieder in den Arbeitsspeicher geladen.
-Die Anwendung selbst bekommt von diesem Vorgang nichts mit. Damit das Ein- und
-Auslagern möglichst effizent ist, teilt der Prozessor den virtuellen Speicher
-in 4 KB große Abschnitte, sogenannte Pages, auf. Wann immer Maschinencode
-auf einen Adressraum zugreifen will, berechnet der Prozessor erst ein mal aus
-der Adresse die Nummer der Page. Er bedient sich dazu der Page-Tabellen auch
-Page-Directorys genannt.  Über sie wird der Adressraum Stück für Stück auf
-Pages im physikalischen Speicher verteilt. Der Prozessor gibt das Format dieser
-Tabellen vor aber sie werden vom Betriebssystem verwaltet. In dem jeweiligen
-Eintrag der Page-Tabelle schaut der Prozessor, ob sich die Page im
-physikalischen Speicher befindet. Ein Eintrag in einer Page-Tabelle enthält für
-diesen Zweck verschiedene Flags, die unter anderem definieren, auf welche Art
-auf die Pages zugegriffen werden darf (read-only, ...) Sollte Speicher
-ausgelagert sein, so wird dies dem Systemkern gemeldet, welcher sich um das
-Nachladen der Pages kümmert. Ist der komplette physikalische Speicher in
-Benutzung, so muss müssen erst andere Pages ausgelagert werden. Was ein
-Programm an durchgängigen Adressraum sieht erstreckt sich so in Wirklichkeit
-über viele Pages, welche an ganz unterschiedlichen Stellen im physikalischen
-Speicher existieren. Der Speicher einer Anwendung kann bis zu Unkenntlichkeit
-fragmentiert sein, doch es wird ihr verborgen bleiben, weil Sie keinen
-Speicherzugriff ausführen kann, ohne das der Prozessor dies bemerken würde. Da
-manche ausgelagerte Daten eventuell zeitnah wieder benötigt werden, versucht
-das Betriebssystem dies zu erahnen und läd manche Daten schon wieder in den
-Speicher, bevor versucht wurde auf diese zu zugreifen. Nicht der komplette
-Adressraum von 4GB steht aber der Anwendung zur Verfügung. Pages von Bibliotheken
-z.B. können in mehreren Anwendungen zur verfügung stehen und eine Instanz einer
-Bibliothek benötigt auch einen Datenbereich. Adressen größer 3GB sind dem
-Systemkern vorbehalten, somit ist anzunehmen, das wenn die CPU in diesen
-Adressraum wechselt, sie auch von Ring-3 zu Ring-0 wechselt.
+Speicherverwaltung zu verdanken. Verwaltet wird die virtuelle Speicherverwaltung
+durch den Systemkern und basiert auf einem grundlegenden Mechanismus der
+Speicheradressierung des Prozessors. Oft ist nicht der gesamte virtuelle
+Speicher einer Anwendung physikalisch verfügbar, da sich eine Anwendung in der
+Regel nur in Teilen des Codes oder der Daten bewegt. So ist es Möglich das man
+Teile des Arbeitsspeichers auf einer Festplatte auslagern kann.  Zugriffe auf
+ausgelagerten Speicher werden vom Prozessor abgefangen und ausgelagerte Teile
+werden von ihm erst wieder in den Arbeitsspeicher geladen.  Die Anwendung selbst
+bekommt von diesem Vorgang nichts mit. Damit das Ein- und Auslagern möglichst
+effizient ist, teilt der Prozessor den virtuellen Speicher in 4 KB große
+Abschnitte, sogenannte Pages, auf. Wann immer Maschinencode auf einen Adressraum
+zugreifen will, berechnet der Prozessor erst ein mal aus der Adresse die Nummer
+der Page. Er bedient sich dazu der Page-Tabellen auch Page-Directorys genannt.
+Über sie wird der Adressraum Stück für Stück auf Pages im physikalischen
+Speicher verteilt. Der Prozessor gibt das Format dieser Tabellen vor aber sie
+werden vom Betriebssystem verwaltet. In dem jeweiligen Eintrag der Page-Tabelle
+schaut der Prozessor, ob sich die Page im physikalischen Speicher befindet. Ein
+Eintrag in einer Page-Tabelle enthält für diesen Zweck verschiedene Flags, die
+unter anderem definieren, auf welche Art auf die Pages zugegriffen werden darf
+(read-only, …). Sollte Speicher ausgelagert sein, so wird dies dem Systemkern
+gemeldet, welcher sich um das Nachladen der Pages kümmert. Ist der komplette
+physikalische Speicher in Benutzung, so müssen erst andere Pages ausgelagert
+werden. Was ein Programm an durchgängigen Adressraum sieht erstreckt sich so in
+Wirklichkeit über viele Pages, welche an ganz unterschiedlichen Stellen im
+physikalischen Speicher existieren. Der Speicher einer Anwendung kann bis zu
+Unkenntlichkeit fragmentiert sein, doch es wird ihr verborgen bleiben, weil Sie
+keinen Speicherzugriff ausführen kann, ohne das der Prozessor dies bemerken
+würde. Da manche ausgelagerte Daten eventuell zeitnah wieder benötigt werden,
+versucht das Betriebssystem dies zu erahnen und lädt manche Daten schon wieder
+in den Speicher, bevor versucht wurde auf diese zuzugreifen. Nicht der komplette
+Adressraum von 4 GB steht aber der Anwendung zur Verfügung. Pages von
+Bibliotheken z. B. können in mehreren Anwendungen zur Verfügung stehen und eine
+Instanz einer Bibliothek benötigt auch einen Datenbereich. Adressen größer 3 GB
+sind dem Systemkern vorbehalten, somit ist anzunehmen, das, wenn die CPU in
+diesen Adressraum wechselt, sie auch von Ring-3 zu Ring-0 wechselt.
 
 https://upload.wikimedia.org/wikipedia/commons/d/dc/MMU_principle_updated.png
+https://upload.wikimedia.org/wikipedia/commons/3/32/Virtual_address_space_and_physical_address_space_relationship.svg
+https://www.tu-chemnitz.de/urz/archiv/kursunterlagen/unix/adrspace.gif
 
 
 Paging
 --------------------------------------------------------------------------------
-Paging ist ein intergraler Bestandteil des Protected Mode und seit dem 80386
+Paging ist ein integraler Bestandteil des Protected Mode und seit dem 80386
 verfügbar. Für den Einsatz des Paging-Mechanismus ist das PG-Bit im
 Control-Register 0 (CR0) des Prozessors verantwortlich. Dieses Bit steht auf 0
 nach dem das System im Real-Mode startet, hier werden lineare Speicheradressen
@@ -73,67 +74,105 @@ untere 12 Bitgrenze dafür sorgt, dass lineare Adressen und physikalische
 Adressen identisch sind. Sie stellen eine Art Offset der Page da. Die oberen 20
 Bit der linearen Adresse werden für die Nummerierung der Page verwendet. Diese
 20 Bit werden isoliert und als Index in der Page-Table verwendet, aus welcher
-die physikalische Adresse entnommen wird.  Die Einträge in der Page-Table sind
-32 Bit breit, es werden aber nur 20 Bit benötigt, denn sie muss an einer durch 4
-kB teilbaren physikalischen Speicherstelle beginnen.  Egal welche Page man
-nimmt, die unteren 12 Bit des Index sind deshalb immer 0.  Somit werden dort die
-verschiedenen Flags untergebracht, welche z.B. definieren ob eine Page
+die physikalische Adresse entnommen wird. Die Einträge in der Page-Table sind 32
+Bit breit, es werden aber nur 20 Bit benötigt, denn sie muss an einer durch 4 kB
+teilbaren physikalischen Speicherstelle beginnen. Egal welche Page man nimmt,
+die unteren 12 Bit des Index sind deshalb immer 0. Somit werden dort die
+verschiedenen Flags untergebracht, welche z. B. definieren, ob eine Page
 ausgelagert ist. Damit für eine komplette Page-Table keine kompletten 4 MB
 verwendet werden müssen, wurde der Mechanismus von Intel etwas verfeinert.
 Anstelle einer großen Page-Table für den gesamten 32-Bit-Adressraum wurde eine
 zweistufige Organisation mit mehreren Page-Tables gewählt. Ausgangspunkt ist das
 Page-Directory, über das mehrere kleinere Page-Tables verwaltet werden. Es
 werden die oberen 10 Bit der linearen Adresse als Index in Page-Directory
-verstanden, welches aus 1024 Einträgen besteht. Die Adresse des Page-Directory
+verstanden, welches aus 1024 Einträgen besteht. Eine Adresse des Page-Directory
 wird über das CR3-Register bereitgestellt. Die einzelnen Einträge einer
 Page-Directory enthalten Zeiger mit den Adressen der verschiedenen Page-Tables.
 Die Nummer des Eintrags, welcher für die Umrechnung der Adresse herangezogen
-wird, ergibt sich aus dem Besitz 12-21 der linearen Adresse. Die lineare Adresse
-wird so in 2 Teile aufgespalten. Das Page-Directory und jede Page-Tabelle nimmt
-so die Adressen von 1024 Pages auf. Jeder Eintrag in der Page-Directory deckt so
-einen Bereich von 4 MB innerhalb des linearen Adressraums ab. Das System kann so
-die Page-Tables nach Bedarf anlegen. Besonders wichtig für die Zusammenarbeit
-mit dem Betriebssystem sind die unteren 20 Bit der Page-Table-Einträge. Hier
-werden wie schon erwähnt die Flags der Pages untergebracht. Besonders wichtig
-ist das Present-Flag, es muss vom Betriebssystem auf 0 gestellt werden wenn eine
-Page ausgelagert wurde. Für den Prozessor ist das das Signal um eine Exception
-auszulösen. Dadurch erlangt das Betriebssystem die Kontrolle über die
-Programmausführung und erhält die Möglichkeit die Page nach zu laden und den
-Page-Table-Eintrag mit einer neuen Basisadresse der Page im Speicher zu
-initialisieren. Das Acccess-Flag wird gesetzt wenn auf eine Page das erste Mal
-zugegriffen wurde. So kann das Betriebssystem später besser entscheiden welche
-Pages zuerst ausgelagert werden sollen, insofern der physikalische Speicher
-knapp wird. Hier werden die bevorzugt, wo das Access-Flag noch auf 0 steht.
-Pages, welche einen Schreibzugriff hatten, bei denen wird das Dirty-Bit auf 1
-gesetzt. Es ist einfacher Pages zu laden, welche unverändert sind. Andere Flags
-realisieren ein Schutzmechanismus zwischen System-Code und User-Code oder
-markieren eine Page als schreibgeschützt. Bei Missachtung dieser Flags wird eine
-Exception ausgelöst.
+wird, ergibt sich aus dem Besitz 12–21 der linearen Adresse. Eine lineare
+Adresse wird so in 2 Teile aufgespalten. Das Page-Directory und jede
+Page-Tabelle nimmt so die Adressen von 1024 Pages auf. Jeder Eintrag in der
+Page-Directory deckt so einen Bereich von 4 MB innerhalb des linearen
+Adressraums ab. Das System kann so die Page-Tables nach Bedarf anlegen.
+Besonders wichtig für die Zusammenarbeit mit dem Betriebssystem sind die unteren
+20 Bit der Page-Table-Einträge. Hier werden wie schon erwähnt die Flags der
+Pages untergebracht. Besonders wichtig ist das Present-Flag, es muss vom
+Betriebssystem auf 0 gestellt werden, wenn eine Page ausgelagert wurde. Für den
+Prozessor ist, dass das Signal um eine Exception auszulösen. Dadurch erlangt das
+Betriebssystem die Kontrolle über die Programmausführung und erhält die
+Möglichkeit die Page nachzuladen und den Page-Table-Eintrag mit einer neuen
+Basisadresse der Page im Speicher zu initialisieren. Das Acccess-Flag wird
+gesetzt, wenn auf eine Page das erste Mal zugegriffen wurde. So kann das
+Betriebssystem später besser entscheiden, welche Pages zuerst ausgelagert werden
+sollen, insofern der physikalische Speicher knapp wird. Hier werden die
+bevorzugt, wo das Access-Flag noch auf 0 steht. Pages, welche einen
+Schreibzugriff hatten, bei denen wird das Dirty-Bit auf 1 gesetzt. Es ist
+einfacher Pages zu laden, welche unverändert sind. Andere Flags realisieren ein
+Schutzmechanismus zwischen System-Code und User-Code oder markieren eine Page
+als schreibgeschützt. Bei Missachtung dieser Flags wird eine Exception
+ausgelöst.
 
 
 Dynamischer Speicher
 --------------------------------------------------------------------------------
 Anwendungen können über verschiedene Möglichkeiten, während der Ausführung
-Speicher allokieren. Hierfür verwendet man in der Regel die Funktionen der
+Speicher allozieren. Hierfür verwendet man in der Regel die Funktionen der
 entsprechenden Bibliotheken, welche die Speicheranforderung dieser Funktionen
-aus dem virtuellen Speicher bedienen. Es ist möglich Speicher zu allokieren,
+aus dem virtuellen Speicher bedienen. Es ist möglich Speicher zu allozieren,
 welcher sich direkt in das Paging-Konstrukt eingefügt. Diese Art wird oft
-benutzt um Dateien in den Speicher einzulesen oder große Arrays anzulegen. Es
+benutzt, um Dateien in den Speicher einzulesen oder große Arrays anzulegen. Es
 ist so möglich sich regelrecht Abschnitte im linearen Adressraum zu reservieren.
 Das System nutzt diese Möglichkeit, um Teile des Adressraums für sich und den
 geladenen Prozess zu reservieren. Auch der User-Code kann davon profitieren,
 überall dort, wo Datenstrukturen während der Programmausführung dynamisch
-wachsen. Dies macht Sinn, da der Erweiterungsspeicher beim Vergrößern einer
+wachsen. Dies ergibt Sinn, da der Erweiterungsspeicher beim Vergrößern einer
 Struktur nicht einfach hinten angehangen werden kann. Andernfalls würde ein
 höherer Aufwand mit Zeigern und verknüpften Listen betrieben werden oder man
-müsste Speicher beim Vergrößern wandern lassen. Allokierter virtuelle Speicher
+müsste Speicher beim Vergrößern wandern lassen. Allozierter virtuelle Speicher
 des User-Codes steht somit dem Systemkern oder verwendeten Bibliotheken nicht
 zur Verfügung. Benötigt man Speicher für Bäume und Listen, so kann man über die
-Heap-Funktionen Speicher byte-genau allokieren.
+Heap-Funktionen Speicher Byte-genau allozieren.Um dem Problem zu entgehen, das
+große reservierte Speicherabschnitte den physikalischen Speicher oder die
+Auslagerungsdatei regelrecht sprengen. Ein Prozess muss den Speicher, welchen er
+wirklich nutzen will noch commiten. Das hat den Vorteil, dass Arrays trotzdem
+sequenziell wachsen können, obwohl hier erst mal nur ein kleiner Teil des
+reservierten Speichers benutzt. Ab hier wird der dynamische Speicher im
+Page-Konstrukt wirklich angelegt. Ist der committete Bereich für die anfallenden
+Daten nicht groß genug, so wird der Prozessor eine Exception auslösen.
+
+
+Heap
+--------------------------------------------------------------------------------
+Wenn man viele kleine Speicherblöcke verwalten möchte, ohne sich die Frage
+stellen zu müssen, ob dieser Speicher verfügbar ist, dann benutzt man die
+verschiedenen Heap-Funktionen. Die C-Standard-Funktionen hierzu sind zum
+Beispiel malloc(), realloc() und free(), welche auf dem entsprechenden
+Betriebssystem-API basieren. Über das Betriebssystem-API ist es in der Regel
+möglich, mehrere Heaps mit unterschiedlichen Größen anzulegen. Der Speicher für
+Heaps wird aus dem virtuellen Adressraum der Anwendung bezogen. Die jeweiligen
+Heaps werden dann über ein Handle angesprochen. Dem Prozess-Heap gibt es bereits
+beim Start eines jeden Prozesses. Der Loader legt in ihm Informationen ab, die
+der Systemkern verwalten muss. Der angefragte Speicher wird immer auf eine
+Page-Größe aufgerundet.
+
+
+Stack
+--------------------------------------------------------------------------------
+Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
+Code-, Daten- und Heapsegment. Der Stack kann mit den Prozessorbefehlen push und
+pop be- und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern.
+Der Stack arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop
+nur das Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde.
+Der Stack wird in der Regel benutzt, um Parameter an Prozeduraufrufe zu übergeben
+und diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
+auch das die lokalen Variablen einer Prozedur, auf dem Stack angelegt werden,
+somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen.
+
+https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg
 
 
 --------------------------------------------------------------------------------
-Overflows
+Speicherüberlauf
 --------------------------------------------------------------------------------
 
 
@@ -147,6 +186,9 @@ Heapoverflow
 
 
 Integeroverflow
+
+
+Shellcode (Payload)
 
 
 DEP

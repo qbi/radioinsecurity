@@ -176,13 +176,28 @@ Speicherüberlauf
 --------------------------------------------------------------------------------
 
 
-Bufferoverflow
+Stack-Based Buffer Overflow
+--------------------------------------------------------------------------------
+Bei vielen C Implementationen ist es möglich den vorhandenen Stack zu
+korrumpierten, indem man über das Ende eines im Stack existierenden Puffers
+schreibt. Ein Puffer ist ein Bereich im Speicher, welcher nacheinander
+verschiedene Instanzen desselben Datentyp beinhaltet. In C sind dies gewöhnlich
+char-Arrays um Strings zu speichern. Globale Variablen werden beim Laden der
+Anwendung im Datensegment angesiedelt. Lokale Variablen in Funktionen werden
+aber dynamisch im Stack angelegt. Verlässt man den Puffer, so überschreiben
+weitere Daten Werte im Stack, welche sich hinter diesem Puffer befinden. Somit
+ist es möglich, Rücksprungsadressen von z.B. Prozeduren zu verändern und dafür
+zu sorgen, dass der Instruktionszeiger an einer anderen Stelle den Code
+fortführt.
+
+
+Global-Based Buffer Overflow
+
+
+Heap-Based Buffer Overflow
 
 
 Stackoverflow
-
-
-Heapoverflow
 
 
 Integeroverflow

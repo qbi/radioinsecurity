@@ -156,6 +156,14 @@ der Systemkern verwalten muss. Der angefragte Speicher wird immer auf eine
 Page-Größe aufgerundet.
 
 
+Codesegment / Textsegment
+--------------------------------------------------------------------------------
+
+
+Datensegment
+--------------------------------------------------------------------------------
+
+
 Stack
 --------------------------------------------------------------------------------
 Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
@@ -171,6 +179,7 @@ somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen.
 https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg
 
 
+
 --------------------------------------------------------------------------------
 Speicherüberlauf
 --------------------------------------------------------------------------------
@@ -184,11 +193,28 @@ schreibt. Ein Puffer ist ein Bereich im Speicher, welcher nacheinander
 verschiedene Instanzen desselben Datentyp beinhaltet. In C sind dies gewöhnlich
 char-Arrays um Strings zu speichern. Globale Variablen werden beim Laden der
 Anwendung im Datensegment angesiedelt. Lokale Variablen in Funktionen werden
-aber dynamisch im Stack angelegt. Verlässt man den Puffer, so überschreiben
+aber dynamisch im Stack angelegt. Verlässt nun man den Puffer, so überschreiben
 weitere Daten Werte im Stack, welche sich hinter diesem Puffer befinden. Somit
 ist es möglich, Rücksprungsadressen von z.B. Prozeduren zu verändern und dafür
 zu sorgen, dass der Instruktionszeiger an einer anderen Stelle den Code
-fortführt.
+fortführt.Ein Prozess ist grundlegend in 3 Regionen aufgebaut. Diese Regionen
+sind das Codesegment, das Datensegment und der Stack. Das Codesegment, welches
+oft auch als Textsegment betitelt wird, beinhaltet wie der Name schon sagt den
+auszuführenden Code und ist schreibgeschützt. Ein Versuch hier Daten zu ändern
+würde zu einer Speicherzugriffsverletzung führen. Im Datensegment sind
+initialisierte und nicht initialisierte globale Variablen angesiedelt. Diese
+Segmente ergeben sich in der Regel direkt durch das parsen einer ausführbaren
+Datei. Sollte der Platz zwischen Datensegment und Stack einmal zu gering werden,
+so wird der Prozess angehalten und kurz darauf mit zusätzlichem Speicher
+fortgesetzt. Das Codesegment beginnt in der Regel im niedrigen Adressraum. In
+Assembler bzw. eigentlich eher im Objektcode ist es möglich Prozeduren bzw.
+Funktionen über ein call an zu springen und über einen ret wieder
+zurückzukehren. Ein call tut dabei nichts anderes als die Adresse nach dem call
+als Rücksprungsadresse auf dem Stack abzulegen und das Register des
+Instruktionszeiger auf die Anfangsadresse der Prozedur zu setzen, ähnlich wie
+bei einem mov. Ein direktes ändern des Instruktionszeiger ist mov aber nicht
+erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt ret die
+Rücksprungsadresse vom Stack und ändert den Instruktionszeiger auf genau diese.
 
 
 Global-Based Buffer Overflow

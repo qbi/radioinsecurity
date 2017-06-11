@@ -160,8 +160,8 @@ Codesegment / Textsegment
 --------------------------------------------------------------------------------
 Ein Prozess ist grundlegend in 3 Regionen aufgebaut. Diese Regionen sind das
 Codesegment, das Datensegment und der Stack. Diese Segmente ergeben sich in der
-Regel direkt durch das parsen einer ausführbaren Datei. Das Codesegment, welches
-oft auch als Textsegment betitelt wird, beinhaltet wie der Name schon sagt den
+Regel direkt durch das Parsen einer ausführbaren Datei. Das Codesegment, welches
+oft auch als Textsegment betitelt wird, beinhaltet, wie der Name schon sagt den
 auszuführenden Code und ist schreibgeschützt. Ein Versuch hier Daten zu ändern
 würde zu einer Speicherzugriffsverletzung führen. Das Codesegment beginnt in der
 Regel im niedrigen Adressraum.
@@ -170,22 +170,48 @@ Regel im niedrigen Adressraum.
 Datensegment
 --------------------------------------------------------------------------------
 Im Datensegment sind initialisierte und nicht initialisierte globale Variablen
-angesiedelt. Sollte der Platz zwischen Datensegment und Stack einmal zu gering
-werden, so wird der Prozess angehalten und kurz darauf mit zusätzlichem Speicher
-fortgesetzt.
+angesiedelt, sowie Konstanten. Auch der dynamische Speicher und der Heap werden
+hier hinzugezählt, diese Bereiche ergeben sich aber nicht aus der ausführbaren
+Datei.
 
 
 Stack
 --------------------------------------------------------------------------------
 Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
-Code-, Daten- und Heapsegment. Der Stack kann mit den Prozessorbefehlen push und
-pop be- und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern.
-Der Stack arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop
-nur das Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde.
-Der Stack wird in der Regel benutzt, um Parameter und Rückgabewerte zu übergeben
-und diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
+Code und Datensegment. Der Stack kann mit den Prozessorbefehlen push und pop be-
+und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern. Der
+Stack arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop nur
+das Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde. Der
+Stack wird in der Regel benutzt, um Parameter und Rückgabewerte zu übergeben und
+diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
 auch das die lokalen Variablen einer Prozedur, auf dem Stack angelegt werden,
-somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen.
+somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen. Der
+Stackzeiger (SP) ist ein Register ähnlich wie der Instruktionszeiger und zeigt
+immer auf das oberste Element im Stack. Das Ende des Stacks ist eine feste
+Adresse und für gewöhnlich auch das Ende des kompletten Prozesses. In
+Ausnahmefällen gibt es auch Stackimplementierungen, wo der Stack zu einer
+größeren Adresse hin wächst, bei gängigen Prozessoren ist dies dennoch nicht der
+Fall. Als Zusatz zu dem Stackzeiger benutzt man oft noch den Base Pointer (BP),
+welcher auf irgend einen Wert im Stack zeigen kann. Zusätzlich wird der
+Framezeiger (FP) benutzt, welche auch in vielen Texten als Local Base Pointer
+(LB) betitelt wird. Der Base Pointer wird benutzt um lokale Variablen über einen
+Offset zu referenzieren. Diese Offset beginnt bei der Adresse, welche im SP
+gespeichert ist. Bei diversen PUSHs und POPs kann sich diese Offset aber
+verändern. In der Regel wirft der Compiler ein Auge hierauf und korrigiert die
+entsprechenden Werte. Viele Compiler benutzen aber das 2. Register des
+Framezeigers und referenzieren damit lokale Variablen sowie Parameter, da der
+Wert im Framezeiger nicht abhängig vom Stackzeiger ist. Der Zugriff auf
+Variablen sowie Parameter wird hier nun mit einem Offset zu dem Wert im
+Framezeiger ermöglicht. Das 1. was eine Funktion bzw. Prozedur tun muss, nachdem
+sie aufgerufen wurde, sie speichert den aktuellen Wert des Framezeiger auch auf
+dem Stack und kopiert den Wert vom Stackzeiger in den Framezeiger, danach wird
+das Stackzeigerwert verändert, um Platz für neue lokale Variablen zu schaffen.
+Soll eine Prozedur beendet werden, so muss der vorherige Zustand wieder
+hergestellt werden, Prozessoren bringen hier die Instruktionen ENTER und LEAVE
+bzw. LINK und UNLINK mit. Das gesamte Vorgehen kann aber bei verschiedenen
+Prozessoren etwas abweichen. Sollte der Platz zwischen Datensegment und Stack
+einmal zu gering werden, so wird der Prozess angehalten und kurz darauf mit
+zusätzlichem Speicher fortgesetzt.
 
 https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg
 
@@ -202,20 +228,20 @@ Stack-Based Buffer Overflow
 Bei vielen C Implementationen ist es möglich den vorhandenen Stack zu
 korrumpierten, indem man über das Ende eines im Stack existierenden Puffers
 schreibt. Ein Puffer ist ein Bereich im Speicher, welcher nacheinander
-verschiedene Instanzen desselben Datentyp beinhaltet. In C sind dies gewöhnlich
-char-Arrays um Strings zu speichern. Globale Variablen werden beim Laden der
-Anwendung im Datensegment angesiedelt. Lokale Variablen in Funktionen werden
-aber dynamisch im Stack angelegt. Verlässt man den Puffer, so überschreiben
-weitere Daten die Werte im Stack, welche sich hinter diesem Puffer befinden.
-Somit ist es möglich die Rücksprungsadressen von z.B. Prozeduren zu verändern
-und dafür zu sorgen, dass der Instruktionszeiger an einer anderen Stelle den
-Code fortführt. In Assembler bzw. eigentlich eher im Objektcode ist es möglich
-Prozeduren bzw. Funktionen über ein CALL anzuspringen und über einen RET wieder
-zurückzukehren. Ein CALL tut dabei nichts anderes als die Adresse nach dem CALL
-als Rücksprungsadresse auf dem Stack abzulegen und das Register des
-Instruktionszeiger auf die Anfangsadresse der Prozedur zu setzen, ähnlich wie
-bei einem MOV. Ein direktes ändern des Instruktionszeiger ist MOV aber nicht
-erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt RET die
+verschiedene Instanzen desselben Datentypen beinhaltet. In C sind dies
+gewöhnlich char-Arrays um Strings zu speichern. Globale Variablen werden beim
+Laden der Anwendung im Datensegment angesiedelt. Lokale Variablen in Funktionen
+werden aber dynamisch im Stack angelegt. Verlässt man den Puffer, so
+überschreiben weitere Daten die Werte im Stack, welche sich hinter diesem Puffer
+befinden.  Somit ist es möglich die Rücksprungsadressen von z. B. Prozeduren zu
+verändern und dafür zu sorgen, dass der Instruktionszeiger an einer anderen
+Stelle den Code fortführt. In Assembler bzw. eigentlich eher im Objektcode ist
+es möglich Prozeduren bzw. Funktionen über ein CALL anzuspringen und über einen
+RET wieder zurückzukehren. Ein CALL tut dabei nichts anderes, als die Adresse
+nach dem CALL als Rücksprungsadresse auf dem Stack abzulegen und das Register
+des Instruktionszeigers auf die Anfangsadresse der Prozedur zu setzen, ähnlich
+wie bei einem MOV. Ein direktes Ändern des Instruktionszeigers ist MOV aber
+nicht erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt RET die
 Rücksprungsadresse vom Stack und ändert den Instruktionszeiger auf genau diese.
 
 

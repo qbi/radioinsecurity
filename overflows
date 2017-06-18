@@ -179,39 +179,43 @@ Stack
 --------------------------------------------------------------------------------
 Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
 Code und Datensegment. Der Stack kann mit den Prozessorbefehlen push und pop be-
-und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern. Der
-Stack arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop nur
-das Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde. Der
-Stack wird in der Regel benutzt, um Parameter und Rückgabewerte zu übergeben und
+und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern. Der Stack
+arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop nur das
+Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde. Der Stack
+wird in der Regel benutzt, um Parameter und Rückgabewerte zu übergeben und
 diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
 auch das die lokalen Variablen einer Prozedur, auf dem Stack angelegt werden,
 somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen. Der
 Stackzeiger (SP) ist ein Register ähnlich wie der Instruktionszeiger und zeigt
 immer auf das oberste Element im Stack. Das Ende des Stacks ist eine feste
-Adresse und für gewöhnlich auch das Ende des kompletten Prozesses. In
+Adresse und für gewöhnlich auch das Ende des kompletten Programms. In
 Ausnahmefällen gibt es auch Stackimplementierungen, wo der Stack zu einer
 größeren Adresse hin wächst, bei gängigen Prozessoren ist dies dennoch nicht der
 Fall. Als Zusatz zu dem Stackzeiger benutzt man oft noch den Base Pointer (BP),
 welcher auf irgend einen Wert im Stack zeigen kann. Zusätzlich wird der
 Framezeiger (FP) benutzt, welche auch in vielen Texten als Local Base Pointer
 (LB) betitelt wird. Der Base Pointer wird benutzt um lokale Variablen über einen
-Offset zu referenzieren. Diese Offset beginnt bei der Adresse, welche im SP
-gespeichert ist. Bei diversen PUSHs und POPs kann sich diese Offset aber
+Offset zu referenzieren. Dieser Offset beginnt bei der Adresse, welche im SP
+gespeichert ist. Bei diversen PUSHs und POPs kann sich dieser Offset aber
 verändern. In der Regel wirft der Compiler ein Auge hierauf und korrigiert die
-entsprechenden Werte. Viele Compiler benutzen aber das 2. Register des
+entsprechenden Werte. Viele Compiler benutzen aber das 2. Register, den
 Framezeigers und referenzieren damit lokale Variablen sowie Parameter, da der
 Wert im Framezeiger nicht abhängig vom Stackzeiger ist. Der Zugriff auf
 Variablen sowie Parameter wird hier nun mit einem Offset zu dem Wert im
 Framezeiger ermöglicht. Das 1. was eine Funktion bzw. Prozedur tun muss, nachdem
-sie aufgerufen wurde, sie speichert den aktuellen Wert des Framezeiger auch auf
-dem Stack und kopiert den Wert vom Stackzeiger in den Framezeiger, danach wird
-das Stackzeigerwert verändert, um Platz für neue lokale Variablen zu schaffen.
-Soll eine Prozedur beendet werden, so muss der vorherige Zustand wieder
-hergestellt werden, Prozessoren bringen hier die Instruktionen ENTER und LEAVE
-bzw. LINK und UNLINK mit. Das gesamte Vorgehen kann aber bei verschiedenen
-Prozessoren etwas abweichen. Sollte der Platz zwischen Datensegment und Stack
-einmal zu gering werden, so wird der Prozess angehalten und kurz darauf mit
-zusätzlichem Speicher fortgesetzt.
+sie aufgerufen wurde, sie speichert den aktuellen Wert des "alten" Framezeiger
+auch auf dem Stack und kopiert die aktuelle Adresse des Stackzeiger in den
+Framezeiger, danach wird der Stackzeiger verändert, um Platz für neue lokale
+Variablen zu schaffen. Dieser Platz is der berüchtigte Puffer aus dem man
+ausbrechen könnte um eine Rücksprungadresse zu verändern.  Soll eine Prozedur
+beendet werden, so muss der vorherige Zustand wieder genau hergestellt werden,
+Prozessoren bringen hier die Instruktionen ENTER und LEAVE bzw. LINK und UNLINK
+mit, natürlich kann man hier auch einfach wieder mit POP und verändern der
+Adresse den Urzustand wieder herstellen. Diese beiden Vorgehensweisen werden
+auch als Prozedur-Prolog bzw. -Epilog verstanden. Das gesamte Vorgehen kann aber
+bei verschiedenen Prozessoren etwas abweichen. Sollte der Platz zwischen
+Datensegment und Stack einmal zu gering werden, so wird der Prozess angehalten
+und kurz darauf mit zusätzlichem Speicher fortgesetzt.
 
 https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg
 

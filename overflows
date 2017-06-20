@@ -216,6 +216,7 @@ auch als Prozedur-Prolog bzw. -Epilog verstanden. Das gesamte Vorgehen kann aber
 bei verschiedenen Prozessoren etwas abweichen. Sollte der Platz zwischen
 Datensegment und Stack einmal zu gering werden, so wird der Prozess angehalten
 und kurz darauf mit zusätzlichem Speicher fortgesetzt.
+https://blog.fefe.de/?ts=a7b7880f
 
 https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg
 

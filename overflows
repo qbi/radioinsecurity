@@ -20,9 +20,9 @@ durch den Systemkern und basiert auf einem grundlegenden Mechanismus der
 Speicheradressierung des Prozessors. Oft ist nicht der gesamte virtuelle
 Speicher einer Anwendung physikalisch verfügbar, da sich eine Anwendung in der
 Regel nur in Teilen des Codes oder der Daten bewegt. So ist es Möglich das man
-Teile des Arbeitsspeichers auf einer Festplatte auslagern kann.  Zugriffe auf
+Teile des Arbeitsspeichers auf einer Festplatte auslagern kann. Zugriffe auf
 ausgelagerten Speicher werden vom Prozessor abgefangen und ausgelagerte Teile
-werden von ihm erst wieder in den Arbeitsspeicher geladen.  Die Anwendung selbst
+werden von ihm erst wieder in den Arbeitsspeicher geladen. Die Anwendung selbst
 bekommt von diesem Vorgang nichts mit. Damit das Ein- und Auslagern möglichst
 effizient ist, teilt der Prozessor den virtuellen Speicher in 4 KB große
 Abschnitte, sogenannte Pages, auf. Wann immer Maschinencode auf einen Adressraum
@@ -131,7 +131,7 @@ höherer Aufwand mit Zeigern und verknüpften Listen betrieben werden oder man
 müsste Speicher beim Vergrößern wandern lassen. Allozierter virtuelle Speicher
 des User-Codes steht somit dem Systemkern oder verwendeten Bibliotheken nicht
 zur Verfügung. Benötigt man Speicher für Bäume und Listen, so kann man über die
-Heap-Funktionen Speicher Byte-genau allozieren.Um dem Problem zu entgehen, das
+Heap-Funktionen Speicher Byte-genau allozieren. Um dem Problem zu entgehen, das
 große reservierte Speicherabschnitte den physikalischen Speicher oder die
 Auslagerungsdatei regelrecht sprengen. Ein Prozess muss den Speicher, welchen er
 wirklich nutzen will noch commiten. Das hat den Vorteil, dass Arrays trotzdem
@@ -161,8 +161,8 @@ Codesegment / Textsegment
 Ein Prozess ist grundlegend in 3 Regionen aufgebaut. Diese Regionen sind das
 Codesegment, das Datensegment und der Stack. Diese Segmente ergeben sich in der
 Regel direkt durch das Parsen einer ausführbaren Datei. Das Codesegment, welches
-oft auch als Textsegment betitelt wird, beinhaltet, wie der Name schon sagt den
-auszuführenden Code und ist schreibgeschützt. Ein Versuch hier Daten zu ändern
+oft auch als Textsegment betitelt wird, beinhaltet, wie der Name schon sagt, den
+auszuführenden Code und ist schreibgeschützt. Ein Versuch, hier Daten zu ändern,
 würde zu einer Speicherzugriffsverletzung führen. Das Codesegment beginnt in der
 Regel im niedrigen Adressraum.
 
@@ -178,9 +178,9 @@ Datei.
 Stack
 --------------------------------------------------------------------------------
 Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
-Code und Datensegment. Der Stack kann mit den Prozessorbefehlen push und pop be-
+Code und Datensegment. Der Stack kann mit den Prozessorbefehlen PUSH und POP be-
 und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern. Der Stack
-arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit pop nur das
+arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit POP nur das
 Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde. Der Stack
 wird in der Regel benutzt, um Parameter und Rückgabewerte zu übergeben und
 diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
@@ -198,20 +198,20 @@ Framezeiger (FP) benutzt, welche auch in vielen Texten als Local Base Pointer
 Offset zu referenzieren. Dieser Offset beginnt bei der Adresse, welche im SP
 gespeichert ist. Bei diversen PUSHs und POPs kann sich dieser Offset aber
 verändern. In der Regel wirft der Compiler ein Auge hierauf und korrigiert die
-entsprechenden Werte. Viele Compiler benutzen aber das 2. Register, den
-Framezeigers und referenzieren damit lokale Variablen sowie Parameter, da der
+entsprechenden Werte. Viele Compiler benutzen aber das zweite Register, den
+Framezeiger und referenzieren damit lokale Variablen sowie Parameter, da der
 Wert im Framezeiger nicht abhängig vom Stackzeiger ist. Der Zugriff auf
 Variablen sowie Parameter wird hier nun mit einem Offset zu dem Wert im
-Framezeiger ermöglicht. Das 1. was eine Funktion bzw. Prozedur tun muss, nachdem
-sie aufgerufen wurde, sie speichert den aktuellen Wert des "alten" Framezeiger
-auch auf dem Stack und kopiert die aktuelle Adresse des Stackzeiger in den
-Framezeiger, danach wird der Stackzeiger verändert, um Platz für neue lokale
-Variablen zu schaffen. Dieser Platz is der berüchtigte Puffer aus dem man
-ausbrechen könnte um eine Rücksprungadresse zu verändern.  Soll eine Prozedur
-beendet werden, so muss der vorherige Zustand wieder genau hergestellt werden,
-Prozessoren bringen hier die Instruktionen ENTER und LEAVE bzw. LINK und UNLINK
-mit, natürlich kann man hier auch einfach wieder mit POP und verändern der
-Adresse den Urzustand wieder herstellen. Diese beiden Vorgehensweisen werden
+Framezeiger ermöglicht. Das erste was eine Funktion bzw. Prozedur tun muss,
+nachdem sie aufgerufen wurde, sie speichert den aktuellen Wert des "alten"
+Framezeiger auch auf dem Stack und kopiert die aktuelle Adresse des Stackzeiger
+in den Framezeiger, danach wird der Stackzeiger verändert, um Platz für neue
+lokale Variablen zu schaffen. Dieser Platz, ist der berüchtigte Puffer, aus dem
+man ausbrechen könnte, um eine Rücksprungadresse zu verändern. Soll eine
+Prozedur beendet werden, so muss der vorherige Zustand wieder genau hergestellt
+werden, Prozessoren bringen hier die Instruktionen ENTER und LEAVE bzw. LINK und
+UNLINK mit, natürlich kann man hier auch einfach wieder mit POP und verändern
+der Adresse den Urzustand wieder herstellen. Diese beiden Vorgehensweisen werden
 auch als Prozedur-Prolog bzw. -Epilog verstanden. Das gesamte Vorgehen kann aber
 bei verschiedenen Prozessoren etwas abweichen. Sollte der Platz zwischen
 Datensegment und Stack einmal zu gering werden, so wird der Prozess angehalten
@@ -232,12 +232,12 @@ Stack-Based Buffer Overflow
 Bei vielen C Implementationen ist es möglich den vorhandenen Stack zu
 korrumpierten, indem man über das Ende eines im Stack existierenden Puffers
 schreibt. Ein Puffer ist ein Bereich im Speicher, welcher nacheinander
-verschiedene Instanzen desselben Datentypen beinhaltet. In C sind dies
+verschiedene Instanzen desselben Datentypen beinhaltet. In C sind dies für
 gewöhnlich char-Arrays um Strings zu speichern. Globale Variablen werden beim
 Laden der Anwendung im Datensegment angesiedelt. Lokale Variablen in Funktionen
 werden aber dynamisch im Stack angelegt. Verlässt man den Puffer, so
 überschreiben weitere Daten die Werte im Stack, welche sich hinter diesem Puffer
-befinden.  Somit ist es möglich die Rücksprungsadressen von z. B. Prozeduren zu
+befinden. Somit ist es möglich die Rücksprungsadressen von z. B. Prozeduren zu
 verändern und dafür zu sorgen, dass der Instruktionszeiger an einer anderen
 Stelle den Code fortführt. In Assembler bzw. eigentlich eher im Objektcode ist
 es möglich Prozeduren bzw. Funktionen über ein CALL anzuspringen und über einen
@@ -246,7 +246,26 @@ nach dem CALL als Rücksprungsadresse auf dem Stack abzulegen und das Register
 des Instruktionszeigers auf die Anfangsadresse der Prozedur zu setzen, ähnlich
 wie bei einem MOV. Ein direktes Ändern des Instruktionszeigers ist MOV aber
 nicht erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt RET die
-Rücksprungsadresse vom Stack und ändert den Instruktionszeiger auf genau diese.
+Rücksprungsadresse vom Stack und ändert den Instruktionszeiger auf genau
+diese. Nun passiert es oft, dass Quelltexte so geschrieben worden, dass Strings
+von dem ein Puffer in einen anderen Puffer byteweise kopiert werden, so lange
+bis ein Stringendezeichen (der Wert 0) in ein Byte des Quellstring vorkommt.
+Ist der Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber z. B. 256 Byte
+groß, so würde die schon etwas obsolete Funktion strcpy (die Alternative ist
+strncpy) aus der C-Standardbibliothek erbarmungslos bis zum Ende kopieren.
+Da hier vermutlich auf Maschinencodeebene immer nur ein Zeiger inkrementiert
+wird und mit einem MOV die Daten kopiert werden. Passiert zur Laufzeit ein
+solcher Fehler, so bekommt man oft, ein segmentation fault. Die Adresse, welche
+in der Quellzeigervariable steht, wird mit Bytes überschrieben und somit
+überschreibt dieser Fehler sogar die Quelladresse von strcpy, danach versucht
+MOV, Daten von einer Adresse zu lesen, die nicht zur Verfügung steht. Hier sollte
+angemerkt sein das MOV in verschiedenen Varianten vorliegt und auch in der Lage
+ist words (16-Bit), doublewords (32-Bit) und quadwords (64-Bit) zu kopieren.
+Findet man nun solch einen Fehler in ein Programm, so kann man durch die
+richtige Anzahl von Bytes, so viel vom Stack überschreiben, das nur die
+Rücksprungsadresse betroffen ist und so kein Speicherzugriffsfehler ausgelöst
+wird. Die Bytes, welche wir hier von strcpy kopieren lassen, enthalten natürlich
+schon unseren Code, welcher später ausgeführt werden soll.
 
 
 Global-Based Buffer Overflow

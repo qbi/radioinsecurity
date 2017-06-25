@@ -252,7 +252,7 @@ von dem ein Puffer in einen anderen Puffer byteweise kopiert werden, so lange
 bis ein Stringendezeichen (der Wert 0) in ein Byte des Quellstring vorkommt.
 Ist der Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber z. B. 256 Byte
 groß, so würde die schon etwas obsolete Funktion strcpy (die Alternative ist
-strncpy) aus der C-Standardbibliothek erbarmungslos bis zum Ende kopieren.
+strncpy), aus der C-Standardbibliothek, erbarmungslos bis zum Ende kopieren.
 Da hier vermutlich auf Maschinencodeebene immer nur ein Zeiger inkrementiert
 wird und mit einem MOV die Daten kopiert werden. Passiert zur Laufzeit ein
 solcher Fehler, so bekommt man oft, ein segmentation fault. Die Adresse, welche

@@ -283,11 +283,14 @@ Integeroverflow
 Shellcode (Payload)
 
 
-DEP
+NX-Bit (DEP)
 
 
-Angriffe DEP
+Angriffe NX-Bit
 
+
+ROP
+https://de.wikipedia.org/wiki/Return_Oriented_Programming
 
 ASLR
 

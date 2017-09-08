@@ -1,28 +1,21 @@
-﻿\documentclass[12pt]{book}
+\documentclass[12pt]{book}
 \usepackage[T1]{fontenc}
-\usepacke[latin1]{inputenc}
-\usepackage{ngerman}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
 
 \begin{document}
 
-\begin{center}
-	\Large
-	The Unlimited
-	\tiny
-	von ........
-\end{center}
+\title{The Unlimited}
+%\author{Unknown}
+%\date{2017}
+\maketitle
 
-\newpage
+\chapter{Speicher}
 
-\tableofcontents
-\newpage
-
-\section{Speicher}
-
-\subsection{Virtuelle Speicherverwaltung (32-Bit)}
+\section{Virtuelle Speicherverwaltung (32-Bit)}
 Man arbeitet mit dem flat memory model bzw. dem protected Mode. Die
 Zusammenarbeit zwischen dem Prozessor und dem Betriebssystemkern ermöglicht,
-dass jedem Prozess einen Adressraum von 4 GB (2^32) zur Verfügung steht. Die
+dass jedem Prozess einen Adressraum von 4 GB (2\^32) zur Verfügung steht. Die
 virtuelle Speicherverwaltung arbeitet nicht mehr kombiniert mit einer Segment-
 und einer Offsetadresse (DOS), sondern man benutzt eine einzige 32-Bit große
 (Offset-)Adresse für den kompletten Adressraum. Der Systemkern setzt beim Start
@@ -66,11 +59,7 @@ Instanz einer Bibliothek benötigt auch einen Datenbereich. Adressen größer 3�
 sind dem Systemkern vorbehalten, somit ist anzunehmen, das, wenn die CPU in
 diesen Adressraum wechselt, sie auch von Ring-3 zu Ring-0 wechselt.
 
-https://upload.wikimedia.org/wikipedia/commons/d/dc/MMU_principle_updated.png
-https://upload.wikimedia.org/wikipedia/commons/3/32/Virtual_address_space_and_physical_address_space_relationship.svg
-https://www.tu-chemnitz.de/urz/archiv/kursunterlagen/unix/adrspace.gif
-
-\subsection{Paging}
+\section{Paging}
 Paging ist ein integraler Bestandteil des Protected Mode und seit dem 80386
 verfügbar. Für den Einsatz des Paging-Mechanismus ist das PG-Bit im
 Control-Register 0 (CR0) des Prozessors verantwortlich. Dieses Bit steht auf 0
@@ -81,8 +70,8 @@ dieses Bit auf 1. Jede Adresse, die der Prozessor bezüglich eines
 Maschinenbefehls verarbeitet, wird in diesem Modus erst einer Page zugeordnet.
 Ein Speicherzugriff wird ab jetzt auf eine Page umgeleitet. Die Größe einer Page
 beträgt 4 kB und jede Page beginnt an einer durch 4 kB teilbaren physikalischen
-Adresse. Der Adressraum wird dadurch in 2^20 verschiedene Pages aufgeteilt, die
-jeweils 2^12 Byte (4 kB) umfassen. Die Ausrichtung auf 4 kB ermöglicht, dass die
+Adresse. Der Adressraum wird dadurch in 2\^20 verschiedene Pages aufgeteilt, die
+jeweils 2\^12 Byte (4 kB) umfassen. Die Ausrichtung auf 4 kB ermöglicht, dass die
 untere 12 Bitgrenze dafür sorgt, dass lineare Adressen und physikalische
 Adressen identisch sind. Sie stellen eine Art Offset der Page da. Die oberen 20
 Bit der linearen Adresse werden für die Nummerierung der Page verwendet. Diese
@@ -125,7 +114,7 @@ Schutzmechanismus zwischen System-Code und User-Code oder markieren eine Page
 als schreibgeschützt. Bei Missachtung dieser Flags wird eine Exception
 ausgelöst.
 
-\subsection{Dynamischer Speicher}
+\section{Dynamischer Speicher}
 Anwendungen können über verschiedene Möglichkeiten, während der Ausführung
 Speicher allozieren. Hierfür verwendet man in der Regel die Funktionen der
 entsprechenden Bibliotheken, welche die Speicheranforderung dieser Funktionen
@@ -151,7 +140,7 @@ reservierten Speichers benutzt. Ab hier wird der dynamische Speicher im
 Page-Konstrukt wirklich angelegt. Ist der committete Bereich für die anfallenden
 Daten nicht groß genug, so wird der Prozessor eine Exception auslösen.
 
-\subsection{Heap}
+\section{Heap}
 Wenn man viele kleine Speicherblöcke verwalten möchte, ohne sich die Frage
 stellen zu müssen, ob dieser Speicher verfügbar ist, dann benutzt man die
 verschiedenen Heap-Funktionen. Die C-Standard-Funktionen hierzu sind zum
@@ -164,7 +153,7 @@ beim Start eines jeden Prozesses. Der Loader legt in ihm Informationen ab, die
 der Systemkern verwalten muss. Der angefragte Speicher wird immer auf eine
 Page-Größe aufgerundet.
 
-\subsection{Code-/Textsegment}
+\section{Code-/Textsegment}
 Ein Prozess ist grundlegend in 3 Regionen aufgebaut. Diese Regionen sind das
 Codesegment, das Datensegment und der Stack. Diese Segmente ergeben sich in der
 Regel direkt durch das Parsen einer ausführbaren Datei. Das Codesegment, welches
@@ -174,13 +163,13 @@ würde zu einer Speicherzugriffsverletzung führen. Das Codesegment beginnt in d
 Regel im niedrigen Adressraum.
 
 
-\subsection{Datensegment}
+\section{Datensegment}
 Im Datensegment sind initialisierte und nicht initialisierte globale Variablen
 angesiedelt, sowie Konstanten. Auch der dynamische Speicher und der Heap werden
 hier hinzugezählt, diese Bereiche ergeben sich aber nicht aus der ausführbaren
 Datei.
 
-\subsection{Stack}
+\section{Stack}
 Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
 Code und Datensegment. Der Stack kann mit den Prozessorbefehlen PUSH und POP be-
 und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern. Der Stack
@@ -221,11 +210,9 @@ bei verschiedenen Prozessoren etwas abweichen. Sollte der Platz zwischen
 Datensegment und Stack einmal zu gering werden, so wird der Prozess angehalten
 und kurz darauf mit zusätzlichem Speicher fortgesetzt.
 
-https://upload.wikimedia.org/wikipedia/commons/2/29/Data_stack.svg
+\chapter{Speicherüberlauf}
 
-\section{Speicherüberlauf}
-
-\subsection{Stack-Based Buffer Overflow}
+\section{Stack-Based Buffer Overflow}
 Bei vielen C Implementationen ist es möglich den vorhandenen Stack zu
 korrumpierten, indem man über das Ende eines im Stack existierenden Puffers
 schreibt. Ein Puffer ist ein Bereich im Speicher, welcher nacheinander
@@ -264,46 +251,47 @@ Rücksprungsadresse betroffen ist und so kein Speicherzugriffsfehler ausgelöst
 wird. Die Bytes, welche wir hier von strcpy kopieren lassen, enthalten natürlich
 schon unseren Code, welcher später ausgeführt werden soll.
 
-\subsection{Global-Based Buffer Overflow}
+\section{Global-Based Buffer Overflow}
 
-\subsection{Heap-Based Buffer Overflow}
+\section{Heap-Based Buffer Overflow}
 
-\subsection{Stackoverflow}
+\section{Stackoverflow}
 %https://blog.fefe.de/?ts=a7b7880f
 
-\subsection{Integeroverflow}
+\section{Integeroverflow}
 
-\subsection{Shellcode (Payload)}
+\section{Shellcode (Payload)}
 
-\section{Gegenmaßnahmen}
+\chapter{Gegenmaßnahmen}
 
-\subsection{NX-Bit}
+\section{NX-Bit}
 
-\subsubsection{Angriffe NX-Bit}
+\subsection{Angriffe NX-Bit}
 
-\subsection{ASLR}
+\section{ASLR}
 
-\subsubsection{PIE-Flag}
+\subsection{PIE-Flag}
 
-\subsubsection{Angriffe ASLR}
+\subsection{Angriffe ASLR}
 
-\paragraph{Spraying}
+\subsubsection{Spraying}
 
-\subsection{Stack-Cookie}
+\section{Stack-Cookie}
 
-\subsection{CFI}
+\section{CFI}
 
-\subsection{Stack Smashing Protector (ehemals ProPolice)}
+\section{Stack Smashing Protector (ehemals ProPolice)}
 
-\subsection{Stack Guard}
+\section{Stack Guard}
 
-\subsection{Syscall-Filtering (https://en.wikipedia.org/wiki/Seccomp)}
+\section{Syscall-Filtering (https://en.wikipedia.org/wiki/Seccomp)}
 
-\subsection{Sandboxing/Container (Chroot, LXC, Jails, Apps, Browser, Java, ...)}
+\section{Sandboxing/Container (Chroot, LXC, Jails, Apps, Browser, Java, ...)}
 
-\subsubsection{Jailbreak}
+\subsection{Jailbreak}
 
-\section{Finden von Overflows}
+\chapter{Finden von Overflows}
 
-\section{Vermeiden von Overflows}
+\chapter{Vermeiden von Overflows}
+
 \end{document}

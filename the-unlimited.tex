@@ -15,7 +15,7 @@
 \section{Virtuelle Speicherverwaltung (32-Bit)}
 Man arbeitet mit dem flat memory model bzw. dem protected Mode. Die
 Zusammenarbeit zwischen dem Prozessor und dem Betriebssystemkern ermöglicht,
-dass jedem Prozess einen Adressraum von 4 GB (2\^32) zur Verfügung steht. Die
+dass jedem Prozess einen Adressraum von 4 GB (2³²) zur Verfügung steht. Die
 virtuelle Speicherverwaltung arbeitet nicht mehr kombiniert mit einer Segment-
 und einer Offsetadresse (DOS), sondern man benutzt eine einzige 32-Bit große
 (Offset-)Adresse für den kompletten Adressraum. Der Systemkern setzt beim Start
@@ -70,8 +70,8 @@ dieses Bit auf 1. Jede Adresse, die der Prozessor bezüglich eines
 Maschinenbefehls verarbeitet, wird in diesem Modus erst einer Page zugeordnet.
 Ein Speicherzugriff wird ab jetzt auf eine Page umgeleitet. Die Größe einer Page
 beträgt 4 kB und jede Page beginnt an einer durch 4 kB teilbaren physikalischen
-Adresse. Der Adressraum wird dadurch in 2\^20 verschiedene Pages aufgeteilt, die
-jeweils 2\^12 Byte (4 kB) umfassen. Die Ausrichtung auf 4 kB ermöglicht, dass die
+Adresse. Der Adressraum wird dadurch in 2²° verschiedene Pages aufgeteilt, die
+jeweils 2¹² Byte (4 kB) umfassen. Die Ausrichtung auf 4 kB ermöglicht, dass die
 untere 12 Bitgrenze dafür sorgt, dass lineare Adressen und physikalische
 Adressen identisch sind. Sie stellen eine Art Offset der Page da. Die oberen 20
 Bit der linearen Adresse werden für die Nummerierung der Page verwendet. Diese

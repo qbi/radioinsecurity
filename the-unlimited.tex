@@ -78,56 +78,68 @@ auch von Ring-3 zu Ring-0 wechselt.
 Paging ist ein integraler Bestandteil des Protected Mode und seit dem 80386
 verfügbar. Für den Einsatz des Paging-Mechanismus ist das PG-Bit im
 Control-Register 0 (CR0) des Prozessors verantwortlich. Dieses Bit steht auf 0
-nach dem das System im Real-Mode startet, hier werden lineare Speicheradressen
-direkt auf physikalische Adressen abgebildet und Paging findet noch nicht statt.
-Schalte das Betriebssystem den Prozessor in den Protected-Mode, so setzt es
-dieses Bit auf 1. Jede Adresse, die der Prozessor bezüglich eines
-Maschinenbefehls verarbeitet, wird in diesem Modus erst einer Page zugeordnet.
-Ein Speicherzugriff wird ab jetzt auf eine Page umgeleitet. Die Größe einer Page
-beträgt 4 kB und jede Page beginnt an einer durch 4 kB teilbaren physikalischen
-Adresse. Der Adressraum wird dadurch in 2hoch20 verschiedene Pages aufgeteilt, die
-jeweils 2hoch12 Byte (4 kB) umfassen. Die Ausrichtung auf 4 kB ermöglicht, dass die
-untere 12 Bitgrenze dafür sorgt, dass lineare Adressen und physikalische
-Adressen identisch sind. Sie stellen eine Art Offset der Page da. Die oberen 20
-Bit der linearen Adresse werden für die Nummerierung der Page verwendet. Diese
-20 Bit werden isoliert und als Index in der Page-Table verwendet, aus welcher
-die physikalische Adresse entnommen wird. Die Einträge in der Page-Table sind 32
-Bit breit, es werden aber nur 20 Bit benötigt, denn sie muss an einer durch 4 kB
-teilbaren physikalischen Speicherstelle beginnen. Egal welche Page man nimmt,
-die unteren 12 Bit des Index sind deshalb immer 0. Somit werden dort die
-verschiedenen Flags untergebracht, welche z. B. definieren, ob eine Page
-ausgelagert ist. Damit für eine komplette Page-Table keine kompletten 4 MB
-verwendet werden müssen, wurde der Mechanismus von Intel etwas verfeinert.
-Anstelle einer großen Page-Table für den gesamten 32-Bit-Adressraum wurde eine
-zweistufige Organisation mit mehreren Page-Tables gewählt. Ausgangspunkt ist das
+nach dem das System im Real-Mode startet, im Real-Mode werden lineare
+Speicheradressen direkt auf physikalische Adressen abgebildet. Paging findet
+hier noch nicht statt. Schalte das Betriebssystem den Prozessor in den
+Protected-Mode, so setzt er dieses Bit auf 1. Jede Adresse, die der Prozessor
+bezüglich eines Maschinenbefehls verarbeitet, wird jetzt einer Page zugeordnet.
+
+Die Größe einer Page beträgt 4 kB (4096 Byte) und jede Page beginnt an einer
+durch 4 kB teilbaren physischen Adresse. Der Adressraum wird dadurch in 1048576
+(20-Bit) verschiedene Pages aufgeteilt, die jeweils 4 kB (12-Bit) umfassen. Die
+Ausrichtung auf 4 kB ermöglicht es, dass die untere 12 Bitgrenze dafür sorgt,
+dass lineare Adressen und physikalische Adressen identisch sind, sie stellen
+eine Art Offset einer Page da. Die oberen 20-Bit der linearen Adresse werden
+für die Nummerierung der Pages verwendet. Diese 20-Bit werden isoliert und als
+Index in der Page-Table verwendet, aus welcher die physischen Adresse entnommen
+wird.
+
+Die Einträge in der Page-Table sind 32-Bit breit, es werden aber nur 20-Bit
+benötigt, denn sie muss, wie bereits erwähnt, an einer durch 4 kB teilbaren
+physischen Speicherstelle beginnen. Egal welche Page man nimmt, die unteren
+12-Bit des Index sind deshalb eigentlich immer 0. Um diese 12-Bit aber doch
+sinnvoll zu nutzen, werden dort verschiedenen Flags untergebracht, welche z. B.
+definieren, ob eine Page ausgelagert ist oder als Read-Only deklariert wurde.
+
+Damit für eine komplette Page-Table keine kompletten 4 MB verwendet werden
+müssen, wurde der Mechanismus von Intel etwas verfeinert.  Anstelle einer
+großen Page-Table für den gesamten 32-Bit-Adressraum wurde eine zweistufige
+Organisation mit mehreren Page-Tables gewählt. Ausgangspunkt ist das
 Page-Directory, über das mehrere kleinere Page-Tables verwaltet werden. Es
-werden die oberen 10 Bit der linearen Adresse als Index in Page-Directory
+werden die oberen 10-Bit der linearen Adresse als Index im Page-Directory
 verstanden, welches aus 1024 Einträgen besteht. Eine Adresse des Page-Directory
 wird über das CR3-Register bereitgestellt. Die einzelnen Einträge einer
-Page-Directory enthalten Zeiger mit den Adressen der verschiedenen Page-Tables.
+Page-Directory enthalten Zeiger mit den Adressen der eigentlichen Page-Tables.
 Die Nummer des Eintrags, welcher für die Umrechnung der Adresse herangezogen
-wird, ergibt sich aus dem Besitz 12–21 der linearen Adresse. Eine lineare
-Adresse wird so in 2 Teile aufgespalten. Das Page-Directory und jede
-Page-Tabelle nimmt so die Adressen von 1024 Pages auf. Jeder Eintrag in der
-Page-Directory deckt so einen Bereich von 4 MB innerhalb des linearen
-Adressraums ab. Das System kann so die Page-Tables nach Bedarf anlegen.
-Besonders wichtig für die Zusammenarbeit mit dem Betriebssystem sind die unteren
-20 Bit der Page-Table-Einträge. Hier werden wie schon erwähnt die Flags der
-Pages untergebracht. Besonders wichtig ist das Present-Flag, es muss vom
+wird, ergibt sich aus den Bits 12–21 der linearen Adresse. Die lineare Adresse
+wird so in 2 Teile aufgespalten, Directory und Table.
+
+Das Page-Directory und jede Page-Table nimmt so die Adressen von 1024 Einträgen
+auf. Jeder Eintrag in der Page-Directory deckt so einen Bereich von 4 MB
+(4096x1024) innerhalb des linearen Adressraums ab. Der Vorteil ist, dass das
+System so die Page-Tables nach Bedarf anlegen kann.
+
+Besonders wichtig für die Zusammenarbeit mit dem Betriebssystem sind die
+unteren 20-Bit der Page-Table-Einträge. Hier werden wie schon erwähnt die Flags
+der Pages untergebracht. Besonders wichtig ist das Present-Flag, es muss vom
 Betriebssystem auf 0 gestellt werden, wenn eine Page ausgelagert wurde. Für den
-Prozessor ist, dass das Signal um eine Exception auszulösen. Dadurch erlangt das
-Betriebssystem die Kontrolle über die Programmausführung und erhält die
+Prozessor ist, dass das Signal um eine Exception auszulösen. Dadurch erlangt
+das Betriebssystem die Kontrolle über die Programmausführung und erhält die
 Möglichkeit die Page nachzuladen und den Page-Table-Eintrag mit einer neuen
-Basisadresse der Page im Speicher zu initialisieren. Das Acccess-Flag wird
-gesetzt, wenn auf eine Page das erste Mal zugegriffen wurde. So kann das
-Betriebssystem später besser entscheiden, welche Pages zuerst ausgelagert werden
-sollen, insofern der physikalische Speicher knapp wird. Hier werden die
-bevorzugt, wo das Access-Flag noch auf 0 steht. Pages, welche einen
-Schreibzugriff hatten, bei denen wird das Dirty-Bit auf 1 gesetzt. Es ist
-einfacher Pages zu laden, welche unverändert sind. Andere Flags realisieren ein
-Schutzmechanismus zwischen System-Code und User-Code oder markieren eine Page
-als schreibgeschützt. Bei Missachtung dieser Flags wird eine Exception
-ausgelöst.
+Basisadresse der Page im Speicher zu initialisieren.
+
+Wird auf eine Page das erste Mal zugegriffen, so wird im Zuge der
+Aktualisierung der Basisadresse, das Access-Flag auf 1 gesetzt.  So kann das
+Betriebssystem später besser entscheiden, welche Pages, sollte der Speicher mal
+knapp werden, zuerst ausgelagert werden. Hier werden die bevorzugt, wo das
+Access-Flag noch auf 0 steht. Pages, welche einen Schreibzugriff hatten, bei
+denen wird zudem das Dirty-Bit auf 1 gesetzt, weil es einfacher ist Pages zu
+laden, welche noch unverändert sind.
+
+Andere Flags realisieren ein Schutzmechanismus zwischen System-Code (Ring-0)
+und User-Code (Ring-3) oder markieren eine Page, wie oben erwähnt, als
+schreibgeschützt. Bei Missachtung dieser Flags, wird wie zu erwarten ist, eine
+Exception im Prozessor ausgelöst.
 
 \section{Dynamischer Speicher}
 

@@ -146,27 +146,32 @@ Exception im Prozessor ausgelöst.
 Anwendungen können über verschiedene Möglichkeiten, während der Ausführung
 Speicher allozieren. Hierfür verwendet man in der Regel die Funktionen der
 entsprechenden Bibliotheken, welche die Speicheranforderung dieser Funktionen
-aus dem virtuellen Speicher bedienen. Es ist möglich Speicher zu allozieren,
-welcher sich direkt in das Paging-Konstrukt eingefügt. Diese Art wird oft
-benutzt, um Dateien in den Speicher einzulesen oder große Arrays anzulegen. Es
-ist so möglich sich regelrecht Abschnitte im linearen Adressraum zu reservieren.
-Das System nutzt diese Möglichkeit, um Teile des Adressraums für sich und den
-geladenen Prozess zu reservieren. Auch der User-Code kann davon profitieren,
-überall dort, wo Datenstrukturen während der Programmausführung dynamisch
-wachsen. Dies ergibt Sinn, da der Erweiterungsspeicher beim Vergrößern einer
-Struktur nicht einfach hinten angehangen werden kann. Andernfalls würde ein
-höherer Aufwand mit Zeigern und verknüpften Listen betrieben werden oder man
-müsste Speicher beim Vergrößern wandern lassen. Allozierter virtuelle Speicher
-des User-Codes steht somit dem Systemkern oder verwendeten Bibliotheken nicht
-zur Verfügung. Benötigt man Speicher für Bäume und Listen, so kann man über die
-Heap-Funktionen Speicher Byte-genau allozieren. Um dem Problem zu entgehen, das
-große reservierte Speicherabschnitte den physikalischen Speicher oder die
-Auslagerungsdatei regelrecht sprengen. Ein Prozess muss den Speicher, welchen er
-wirklich nutzen will noch commiten. Das hat den Vorteil, dass Arrays trotzdem
-sequenziell wachsen können, obwohl hier erst mal nur ein kleiner Teil des
-reservierten Speichers benutzt. Ab hier wird der dynamische Speicher im
-Page-Konstrukt wirklich angelegt. Ist der committete Bereich für die anfallenden
-Daten nicht groß genug, so wird der Prozessor eine Exception auslösen.
+aus dem virtuellen Speicher bedienen.
+
+Es ist möglich Speicher zu allozieren, welcher sich direkt in das
+Paging-Konstrukt eingefügt. Diese Art wird oft benutzt, um Dateien in den
+Speicher einzulesen oder große Arrays anzulegen. Es ist so möglich sich
+regelrecht Abschnitte im linearen Adressraum zu reservieren. Das
+Betriebssystem nutzt diese Möglichkeit, um Teile des Adressraums für sich und
+den geladenen Prozess zu reservieren. Auch der User-Code kann davon
+profitieren, überall dort, wo Datenstrukturen während der Programmausführung
+dynamisch wachsen. Dies ergibt Sinn, da der Erweiterungsspeicher beim
+Vergrößern einer Datenstruktur, wie z. B. einer verketteten Liste, nicht
+einfach hinten angehangen werden kann. Andernfalls würde ein höherer Aufwand
+mit Zeigern und verknüpften Listen betrieben werden oder man müsste Speicher
+beim Vergrößern wandern lassen. Allozierter virtuelle Speicher des User-Codes
+steht somit dem Systemkern oder verwendeten Bibliotheken nicht zur Verfügung.
+Benötigt man Speicher für Bäume und Listen, so kann man über die
+Heap-Funktionen Speicher Byte-genau allozieren. So kann man dem Problem
+entgehen, das große reservierte Speicherabschnitte den physikalischen Speicher
+oder die Auslagerungsdatei regelrecht sprengen.
+
+Ein Prozess muss den Speicher, welchen er wirklich nutzen will noch commiten.
+Das hat den Vorteil, dass Arrays trotzdem sequenziell wachsen können, obwohl
+hier erst mal nur ein kleiner Teil des reservierten Speichers benutzt wird.
+Nach dem Commit wird der dynamische Speicher im Page-Konstrukt wirklich
+angelegt. Sollte der committete Bereich für die anfallenden Daten nicht groß
+genug sein, so wird der Prozessor eine Exception auslösen.
 
 \section{Heap}
 

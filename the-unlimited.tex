@@ -141,7 +141,27 @@ und User-Code (Ring-3) oder markieren eine Page, wie oben erwähnt, als
 schreibgeschützt. Bei Missachtung dieser Flags, wird wie zu erwarten ist, eine
 Exception im Prozessor ausgelöst.
 
-\section{Dynamischer Speicher}
+\section{Prozessspeicher}
+
+Ein Prozess ist grundlegend in 3 Regionen aufgebaut. Diese Regionen sind das
+Codesegment, das Datensegment und der Stack. Diese Segmente ergeben sich in der
+Regel direkt durch das Parsen einer ausführbaren Datei.
+
+\subsection{Code-/Textsegment}
+
+Das Codesegment, welches oft auch als Textsegment betitelt wird, beinhaltet,
+wie der Name schon sagt, den auszuführenden Code und ist schreibgeschützt. Ein
+Versuch, hier Daten zu ändern, würde zu einer Speicherzugriffsverletzung
+führen. Das Codesegment beginnt in der Regel im niedrigen Adressraum.
+
+\subsection{Datensegment}
+
+Im Datensegment sind initialisierte und nicht initialisierte globale Variablen
+angesiedelt, sowie Konstanten. Der dynamische Speicher wird hier auch
+hinzugezählt, dieser Bereich ergibt sich aber nicht durch das Parsen einer
+ausführbaren Datei.
+
+\subsubsection{Dynamischer Speicher}
 
 Anwendungen können über verschiedene Möglichkeiten, während der Ausführung
 Speicher allozieren. Hierfür verwendet man in der Regel die Funktionen der
@@ -173,39 +193,21 @@ Nach dem Commit wird der dynamische Speicher im Page-Konstrukt wirklich
 angelegt. Sollte der committete Bereich für die anfallenden Daten nicht groß
 genug sein, so wird der Prozessor eine Exception auslösen.
 
-\section{Heap}
+\paragraph{Heap}
 
-Wenn man viele kleine Speicherblöcke verwalten möchte, ohne sich die Frage
-stellen zu müssen, ob dieser Speicher verfügbar ist, dann benutzt man die
-verschiedenen Heap-Funktionen. Die C-Standard-Funktionen hierzu sind zum
-Beispiel malloc(), realloc() und free(), welche auf dem entsprechenden
+steht für Halde oder Haufen und wird benötigt, wenn man viele kleine
+Speicherblöcke verwalten möchte, ohne sich die Frage stellen zu müssen, ob
+dieser Speicher verfügbar ist. Die C-Standardbibliothek stellt hier die
+Funktionen malloc(), realloc() und free() bereit, welche auf dem entsprechenden
 Betriebssystem-API basieren. Über das Betriebssystem-API ist es in der Regel
 möglich, mehrere Heaps mit unterschiedlichen Größen anzulegen. Der Speicher für
 Heaps wird aus dem virtuellen Adressraum der Anwendung bezogen. Die jeweiligen
-Heaps werden dann über ein Handle angesprochen. Dem Prozess-Heap gibt es bereits
-beim Start eines jeden Prozesses. Der Loader legt in ihm Informationen ab, die
-der Systemkern verwalten muss. Der angefragte Speicher wird immer auf eine
-Page-Größe aufgerundet.
+Heaps werden dann über ein Handle (Zeiger) angesprochen. Den Prozess-Heap gibt
+es bereits beim Start eines jeden Prozesses, da der Loader in ihm Informationen
+ablegt, die der Systemkern verwalten muss. Der angefragte Speicher wird immer
+auf eine Page-Größe aufgerundet.
 
-\section{Code-/Textsegment}
-
-Ein Prozess ist grundlegend in 3 Regionen aufgebaut. Diese Regionen sind das
-Codesegment, das Datensegment und der Stack. Diese Segmente ergeben sich in der
-Regel direkt durch das Parsen einer ausführbaren Datei. Das Codesegment, welches
-oft auch als Textsegment betitelt wird, beinhaltet, wie der Name schon sagt, den
-auszuführenden Code und ist schreibgeschützt. Ein Versuch, hier Daten zu ändern,
-würde zu einer Speicherzugriffsverletzung führen. Das Codesegment beginnt in der
-Regel im niedrigen Adressraum.
-
-
-\section{Datensegment}
-
-Im Datensegment sind initialisierte und nicht initialisierte globale Variablen
-angesiedelt, sowie Konstanten. Auch der dynamische Speicher und der Heap werden
-hier hinzugezählt, diese Bereiche ergeben sich aber nicht aus der ausführbaren
-Datei.
-
-\section{Stack}
+\subsection{Stack}
 
 Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
 Code und Datensegment. Der Stack kann mit den Prozessorbefehlen PUSH und POP be-

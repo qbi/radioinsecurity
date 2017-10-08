@@ -14,7 +14,7 @@
 
 \section{Virtuelle Speicherverwaltung (32-Bit)}
 
-In der virtuelen Speicherverwaltung benutzt man für Prozesse das Flat Memory
+In der virtuellen Speicherverwaltung benutzt man für Prozesse das Flat Memory
 Model, auch bekannt als Protected Mode. Die Zusammenarbeit zwischen dem
 Prozessor und dem Betriebssystemkern ermöglichen es, dass jedem Prozess einen
 Adressraum von 4 GB (32-Bit) zur Verfügung steht. Die virtuelle Speicherverwaltung
@@ -26,7 +26,7 @@ Der Systemkern setzt beim Start einer Anwendung einen 4 GB umfassenden
 Adressraum, auch wenn gar keine 4 GB RAM zur Verfügung stehen. Dabei belegt
 eine Anwendung nur so viel Speicher, wie der Programmcode und die zugehörigen
 Daten benötigen. Ist noch zusätzlichen Speicher nötig, so kann
-dieser, dank der virtuellen Speicherverwaltung, nachträglich angefordet werden.
+dieser, dank der virtuellen Speicherverwaltung, nachträglich angefordert werden.
 Verwaltet wird die virtuelle Speicherverwaltung durch den Systemkern und basiert
 auf einem grundlegenden Mechanismus der Speicheradressierung des Prozessors.
 
@@ -43,13 +43,13 @@ Pages, auf.
 Wann immer Maschinencode auf einen Adressraum zugreifen will, berechnet der
 Prozessor zuerst einmal aus der Adresse die Nummer der Page. Er bedient sich dazu
 der Page-Tabellen auch bekannt als Page-Directorys. Über sie wird der
-Adressraum Stück für Stück auf Pages im pyhsischen Speicher verteilt. Der
+Adressraum Stück für Stück auf Pages im physischen Speicher verteilt. Der
 Prozessor gibt zwar das Format dieser Tabellen vor, aber verwaltet werden sie
 vom Betriebssystem. Der Eintrag der Page-Tabelle informiert den Prozessor auch
 darüber, ob sich eine Page im physischen Speicher befindet oder ob diese
 eventuell auf eine Festplatte ausgelagert wurde. Ein Eintrag in einer
 Page-Tabelle enthält für diesen Zweck verschiedene Flags, die unter anderem
-definieren, auf welche Art auf die Pages zugegriffen werden darf (read-only, …).
+definieren, auf welche Art auf die Pages zugegriffen werden darf (Read-Only, …).
 Sollte Speicher ausgelagert sein, so wird dies dem Systemkern gemeldet, welcher
 sich dann um das Nachladen der Pages kümmert. Sollte es passieren das der
 komplette physische Speicher in Benutzung ist, so müssen erst andere Pages
@@ -99,7 +99,7 @@ benötigt, denn sie muss, wie bereits erwähnt, an einer durch 4 kB teilbaren
 physischen Speicherstelle beginnen. Egal welche Page man nimmt, die unteren
 12-Bit des Index sind deshalb eigentlich immer 0. Um diese 12-Bit aber doch
 sinnvoll zu nutzen, werden dort verschiedenen Flags untergebracht, welche z. B.
-definieren, ob eine Page ausgelagert ist oder als Read-Only deklariert wurde.
+Definieren, ob eine Page ausgelagert ist oder als Read-Only deklariert wurde.
 
 Damit für eine komplette Page-Table keine kompletten 4 MB verwendet werden
 müssen, wurde der Mechanismus von Intel etwas verfeinert.  Anstelle einer
@@ -177,7 +177,7 @@ den geladenen Prozess zu reservieren. Auch der User-Code kann davon
 profitieren, überall dort, wo Datenstrukturen während der Programmausführung
 dynamisch wachsen. Dies ergibt Sinn, da der Erweiterungsspeicher beim
 Vergrößern einer Datenstruktur, wie z. B. einer verketteten Liste, nicht
-einfach hinten angehangen werden kann. Andernfalls würde ein höherer Aufwand
+einfach hinten an gehangen werden kann. Andernfalls würde ein höherer Aufwand
 mit Zeigern und verknüpften Listen betrieben werden oder man müsste Speicher
 beim Vergrößern wandern lassen. Allozierter virtuelle Speicher des User-Codes
 steht somit dem Systemkern oder verwendeten Bibliotheken nicht zur Verfügung.
@@ -210,44 +210,56 @@ auf eine Page-Größe aufgerundet.
 \subsection{Stack}
 
 Der Stack befindet sich am Ende des Prozessadressraumes und wächst in Richtung
-Code und Datensegment. Der Stack kann mit den Prozessorbefehlen PUSH und POP be-
-und entladen werden. Sein Aufbau ähnelt hier einem Stapel von Tellern. Der Stack
-arbeitet nach dem Last-In-First-Out-Prinzip (LIFO). So kann mit POP nur das
-Element entladen werden, welches zuletzt auf dem Stack abgelegt wurde. Der Stack
-wird in der Regel benutzt, um Parameter und Rückgabewerte zu übergeben und
-diverse Rücksprungsadressen zu vorherigen Prozeduren vorzuhalten. Üblich ist
-auch das die lokalen Variablen einer Prozedur, auf dem Stack angelegt werden,
-somit ist es möglich verschiedene Prozeduren verschieden oft aufzurufen. Der
-Stackzeiger (SP) ist ein Register ähnlich wie der Instruktionszeiger und zeigt
-immer auf das oberste Element im Stack. Das Ende des Stacks ist eine feste
-Adresse und für gewöhnlich auch das Ende des kompletten Programms. In
-Ausnahmefällen gibt es auch Stackimplementierungen, wo der Stack zu einer
-größeren Adresse hin wächst, bei gängigen Prozessoren ist dies dennoch nicht der
-Fall. Als Zusatz zu dem Stackzeiger benutzt man oft noch den Base Pointer (BP),
-welcher auf irgend einen Wert im Stack zeigen kann. Zusätzlich wird der
-Framezeiger (FP) benutzt, welche auch in vielen Texten als Local Base Pointer
-(LB) betitelt wird. Der Base Pointer wird benutzt um lokale Variablen über einen
-Offset zu referenzieren. Dieser Offset beginnt bei der Adresse, welche im SP
-gespeichert ist. Bei diversen PUSHs und POPs kann sich dieser Offset aber
-verändern. In der Regel wirft der Compiler ein Auge hierauf und korrigiert die
-entsprechenden Werte. Viele Compiler benutzen aber das zweite Register, den
-Framezeiger und referenzieren damit lokale Variablen sowie Parameter, da der
-Wert im Framezeiger nicht abhängig vom Stackzeiger ist. Der Zugriff auf
-Variablen sowie Parameter wird hier nun mit einem Offset zu dem Wert im
-Framezeiger ermöglicht. Das erste was eine Funktion bzw. Prozedur tun muss,
-nachdem sie aufgerufen wurde, sie speichert den aktuellen Wert des "alten"
-Framezeiger auch auf dem Stack und kopiert die aktuelle Adresse des Stackzeiger
-in den Framezeiger, danach wird der Stackzeiger verändert, um Platz für neue
-lokale Variablen zu schaffen. Dieser Platz, ist der berüchtigte Puffer, aus dem
-man ausbrechen könnte, um eine Rücksprungadresse zu verändern. Soll eine
-Prozedur beendet werden, so muss der vorherige Zustand wieder genau hergestellt
-werden, Prozessoren bringen hier die Instruktionen ENTER und LEAVE bzw. LINK und
-UNLINK mit, natürlich kann man hier auch einfach wieder mit POP und verändern
-der Adresse den Urzustand wieder herstellen. Diese beiden Vorgehensweisen werden
-auch als Prozedur-Prolog bzw. -Epilog verstanden. Das gesamte Vorgehen kann aber
-bei verschiedenen Prozessoren etwas abweichen. Sollte der Platz zwischen
-Datensegment und Stack einmal zu gering werden, so wird der Prozess angehalten
-und kurz darauf mit zusätzlichem Speicher fortgesetzt.
+Code und Datensegment. Der Stack kann mit den Prozessor- bzw. Assemblerbefehlen
+PUSH und POP be- und entladen werden. Das heißt sein Aufbau ähnelt hier einem
+Stapel von Tellern, welchen der Stack nach dem Last-In-First-Out-Prinzip (LIFO)
+abarbeitet. So kann mit POP nur das Element entladen werden, welches zuletzt
+auf dem Stack abgelegt wurde.
+
+Der Stack wird in der Regel benutzt, um Parameter und Rückgabewerte zu
+übergeben und diverse Rücksprungadressen zu vorherigen Prozeduren vorzuhalten.
+Üblich ist auch das die lokalen Variablen einer Prozedur (Funktion), auf dem
+Stack angelegt werden. Das vorhalten der lokalen Variablen auf dem Stack
+ermöglicht es, dass verschiedene Prozeduren verschieden oft aufgerufen werden
+können.
+
+Der Stack Pointer (SP) ist ein Register, ähnlich dem Instruction Pointer (IP)
+und zeigt immer auf die Adresse des obersten Elements im Stack. Das Ende des
+Stacks ist eine feste Adresse und für gewöhnlich auch das Ende des kompletten
+Programms. Es gibt auch Ausnahmefälle in der Stackimplementierungen, hier
+wächst der Stack dann zu einer größeren Adresse hin. Bei gängigen Prozessoren
+ist dies dennoch nicht der Fall. Als Zusatz, um eine Variable zu referenzieren
+zu können, braucht der Stack Pointer noch den Base Pointer (BP), welcher auf
+irgend einen Wert im Stack zeigen kann. Auch der Frame Pointer (FP) kommt hier
+ggf. zum Einsatz, welcher auch in vielen Texten als Local Base Pointer (LB)
+bezeichnet wird.
+
+Der Base Pointer wird benutzt um lokale Variablen über einen Offset zu
+referenzieren. Dieser Offset beginnt bei der Adresse, welche im Stack Pointer
+gespeichert ist. Bei weiteren Prozeduraufrufen wird der Offset aber quasi
+größer und muss verändert werden, diese Veränderungen werden in der Regel vom
+Compiler vorgenommen. Muss der Compiler die Offsetadresse im Base Pointer oft
+aktualisieren, ist das je nach dem ein nicht zu unterschätzender Aufwand. Eine
+andere und oft genutzte Strategie um lokale Variablen zu referenzieren ist hier
+die Benutzung des Frame Pointers. Der Zugriff auf Variablen und Parameter wird
+bei dieser Vorgehensweise mit einem Offset zu dem Wert im Frame Pointer
+ermöglicht, da der Frame Pointer nicht abhängig von dem Wert im Stack Pointer
+ist, muss auch der Compiler hier keine nachträglichen Korrekturen vornehmen.
+
+Das erste was eine Prozedur tun muss, nachdem sie aufgerufen wurde, ist sie
+speichert den aktuellen Wert des Frame Pointers auf dem Stack und kopiert die
+aktuelle Stack Pointer Adresse in den Frame Pointer. Darauffolgend wird der
+Stack Pointer so verändert, dass genug Platz für die lokale Variablen entsteht.
+Dieser Platz, ist der berüchtigte Buffer, aus dem man ausbrechen könnte, um z.
+B. eine Rücksprungadresse zu verändern.
+
+Soll eine Prozedur beendet werden, so muss der vorherige Zustand natürlich
+wieder genau hergestellt werden, Prozessoren bringen hier die Instruktionen
+ENTER und LEAVE bzw. LINK und UNLINK mit, bzw. kann man hier auch einfach
+wieder mit POP und verändern der Adressen den Urzustand wieder herstellen.
+
+Diese Vorgehensweisen werden als Prozedur-Prolog bzw. -Epilog verstanden und
+können bei verschiedenen Prozessoren etwas abweichen.
 
 \chapter{Speicherüberlauf}
 
@@ -297,6 +309,9 @@ schon unseren Code, welcher später ausgeführt werden soll.
 
 \section{Stackoverflow}
 %https://blog.fefe.de/?ts=a7b7880f
+Sollte der Platz zwischen Datensegment und Stack einmal zu gering werden, so
+wird der Prozess angehalten und kurz darauf mit zusätzlichem Speicher
+fortgesetzt.
 
 \section{Integeroverflow}
 

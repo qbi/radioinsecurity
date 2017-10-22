@@ -270,33 +270,42 @@ korrumpierten, indem man über das Ende eines im Stack existierenden Puffers
 schreibt. Ein Puffer ist ein Bereich im Speicher, welcher nacheinander
 verschiedene Instanzen desselben Datentypen beinhaltet. In C sind dies für
 gewöhnlich char-Arrays um Strings zu speichern. Globale Variablen werden beim
-Laden der Anwendung im Datensegment angesiedelt. Lokale Variablen in Funktionen
-werden aber dynamisch im Stack angelegt. Verlässt man den Puffer, so
-überschreiben weitere Daten die Werte im Stack, welche sich hinter diesem Puffer
-befinden. Somit ist es möglich die Rücksprungsadressen von z. B. Prozeduren zu
-verändern und dafür zu sorgen, dass der Instruktionszeiger an einer anderen
-Stelle den Code fortführt. In Assembler bzw. eigentlich eher im Objektcode ist
-es möglich Prozeduren bzw. Funktionen über ein CALL anzuspringen und über einen
-RET wieder zurückzukehren. Ein CALL tut dabei nichts anderes, als die Adresse
-nach dem CALL als Rücksprungsadresse auf dem Stack abzulegen und das Register
-des Instruktionszeigers auf die Anfangsadresse der Prozedur zu setzen, ähnlich
-wie bei einem MOV. Ein direktes Ändern des Instruktionszeigers ist MOV aber
-nicht erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt RET die
-Rücksprungsadresse vom Stack und ändert den Instruktionszeiger auf genau
-diese. Nun passiert es oft, dass Quelltexte so geschrieben worden, dass Strings
-von dem ein Puffer in einen anderen Puffer byteweise kopiert werden, so lange
-bis ein Stringendezeichen (der Wert 0) in ein Byte des Quellstring vorkommt.
-Ist der Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber z. B. 256 Byte
-groß, so würde die schon etwas obsolete Funktion strcpy (die Alternative ist
-strncpy), aus der C-Standardbibliothek, erbarmungslos bis zum Ende kopieren.
-Da hier vermutlich auf Maschinencodeebene immer nur ein Zeiger inkrementiert
-wird und mit einem MOV die Daten kopiert werden. Passiert zur Laufzeit ein
-solcher Fehler, so bekommt man oft, ein segmentation fault. Die Adresse, welche
-in der Quellzeigervariable steht, wird mit Bytes überschrieben und somit
-überschreibt dieser Fehler sogar die Quelladresse von strcpy, danach versucht
-MOV, Daten von einer Adresse zu lesen, die nicht zur Verfügung steht. Hier sollte
-angemerkt sein das MOV in verschiedenen Varianten vorliegt und auch in der Lage
-ist words (16-Bit), doublewords (32-Bit) und quadwords (64-Bit) zu kopieren.
+Laden der Anwendung im Datensegment angelegt, lokale Variablen aus Funktionen
+werden aber dynamisch im Stack angelegt.
+
+Verlässt man diesen Puffer, so überschreiben die weitere Daten Werte im Stack,
+welche sich hinter dem Puffer befinden. Somit ist es möglich die
+Rücksprungsadressen von z. B. Prozeduren zu verändern und dafür zu sorgen, dass
+der Instruction Pointer an einer anderen Stelle den Code fortführt.
+
+In Assembler bzw. eigentlich eher im Objektcode ist es möglich Prozeduren bzw.
+Funktionen über ein CALL anzuspringen und über einen RET wieder zurückzukehren.
+Ein CALL tut dabei nichts anderes, als die Adresse des Befehls, welcher
+sequentiell quasi direkt nach dem CALL ausgeführt würde als Rücksprungsadresse
+auf dem Stack abzulegen und das Register des Instruction Pointer auf die
+Anfangsadresse der Prozedur zu setzen, ähnlich wie mit einem MOV. Ein direktes
+Ändern des Instruction Pointer ist MOV aber nicht erlaubt. Um zum
+ursprünglichen Code zurück zu gelangen, entfernt RET die Rücksprungsadresse vom
+Stack und ändert den Instruction Pointer auf genau diese.
+
+Nun passiert es oft, dass Quelltexte so geschrieben werden, dass Strings von
+dem ein Puffer in einen anderen Puffer byteweise kopiert werden, so lange bis
+ein Stringendezeichen (der Wert 0) in einem Byte des Quellstring vorkommt.  Ist
+der Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber z. B. 256 Byte
+groß, so würde die veraltete Funktion strcpy (die Alternative ist strncpy), aus
+der C-Standardbibliothek, erbarmungslos bis zum Ende des Quellstrings alle
+Bytes kopieren. Auf Maschinencodeebene wird hier vermutlich nur ein Zeiger
+inkrementiert und mit einem MOV kopiert man dann schrittweise die Daten. Hier
+sollte angemerkt sein das MOV in verschiedenen Varianten vorliegt und auch in
+der Lage ist Words (16-Bit), Doublewords (32-Bit) und Quadwords (64-Bit) zu
+kopieren.
+
+Passiert zur Laufzeit ein solcher Fehler, so bekommt man oft, ein Segmentation
+Fault. Die Adresse, welche in der lokalen Quellzeigervariable steht, wird mit
+Bytes überschrieben und somit überschreibt dieser Fehler sogar die Quelladresse
+von strcpy, danach versucht MOV, Daten von einer Adresse zu lesen, die nicht
+zur Verfügung steht. 
+
 Findet man nun solch einen Fehler in ein Programm, so kann man durch die
 richtige Anzahl von Bytes, so viel vom Stack überschreiben, das nur die
 Rücksprungsadresse betroffen ist und so kein Speicherzugriffsfehler ausgelöst

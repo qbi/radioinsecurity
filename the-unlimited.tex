@@ -269,32 +269,35 @@ Bei vielen C Implementationen ist es möglich den vorhandenen Stack zu
 korrumpierten, indem man über das Ende eines im Stack existierenden Puffers
 schreibt. Ein Puffer ist ein Bereich im Speicher, welcher nacheinander
 verschiedene Instanzen desselben Datentypen beinhaltet. In C sind dies für
-gewöhnlich char-Arrays um Strings zu speichern. Globale Variablen werden beim
-Laden der Anwendung im Datensegment angelegt, lokale Variablen aus Funktionen
-werden aber dynamisch im Stack angelegt.
+gewöhnlich char-Arrays um Strings zu speichern.
 
-Verlässt man diesen Puffer, so überschreiben die weitere Daten Werte im Stack,
-welche sich hinter dem Puffer befinden. Somit ist es möglich die
-Rücksprungsadressen von z. B. Prozeduren zu verändern und dafür zu sorgen, dass
-der Instruction Pointer an einer anderen Stelle den Code fortführt.
+Man muss hier unterscheiden zwischen Globale Variablen, welche beim Laden der
+Anwendung im Datensegment angelegt werden und lokale Variablen aus Funktionen
+die dynamisch auf dem Stack erzeugt werden.
 
-In Assembler bzw. eigentlich eher im Objektcode ist es möglich Prozeduren bzw.
-Funktionen über ein CALL anzuspringen und über einen RET wieder zurückzukehren.
-Ein CALL tut dabei nichts anderes, als die Adresse des Befehls, welcher
-sequentiell quasi direkt nach dem CALL ausgeführt würde als Rücksprungsadresse
-auf dem Stack abzulegen und das Register des Instruction Pointer auf die
-Anfangsadresse der Prozedur zu setzen, ähnlich wie mit einem MOV. Ein direktes
-Ändern des Instruction Pointer ist MOV aber nicht erlaubt. Um zum
-ursprünglichen Code zurück zu gelangen, entfernt RET die Rücksprungsadresse vom
-Stack und ändert den Instruction Pointer auf genau diese.
+Verlässt man diesen sogenannten Puffer, so überschreiben die folgenden Daten
+Werte im Stack, welche sich hinter dem Puffer befinden. Somit ist es möglich,
+die Rücksprungsadressen von z. B. Prozeduren zu verändern und dafür zu sorgen,
+dass der Instruction Pointer an einer anderen Stelle den Code fortführt.
 
-Nun passiert es oft, dass Quelltexte so geschrieben werden, dass Strings von
-dem ein Puffer in einen anderen Puffer byteweise kopiert werden, so lange bis
-ein Stringendezeichen (der Wert 0) in einem Byte des Quellstring vorkommt.  Ist
-der Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber z. B. 256 Byte
-groß, so würde die veraltete Funktion strcpy (die Alternative ist strncpy), aus
-der C-Standardbibliothek, erbarmungslos bis zum Ende des Quellstrings alle
-Bytes kopieren. Auf Maschinencodeebene wird hier vermutlich nur ein Zeiger
+In Assembler bzw. eigentlich eher im Objektcode werden Prozeduren bzw.
+Funktionen über ein CALL aufgerufen und mit einem RET ist man dann in der Lage
+zur vorherigen zurück zu springen. Ein CALL tut dabei nichts anderes, als die
+Adresse des Befehls, welcher sequentiell quasi direkt nach dem CALL ausgeführt
+würde als Rücksprungsadresse auf dem Stack abzulegen und das Register des
+Instruction Pointer auf die Anfangsadresse der neuen Prozedur zu setzen, ähnlich
+wie mit einem MOV. Ein direktes Ändern des Instruction Pointer ist MOV aber
+nicht erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt RET die
+Rücksprungsadresse vom Stack und ändert den Instruction Pointer wieder auf genau
+diese.
+
+Nun passiert es oft, dass Quelltexte so geschrieben werden, dass Strings von dem
+ein Puffer in einen anderen Puffer byteweise kopiert werden, so lange bis ein
+Stringendezeichen (der Wert 0) in einem Byte des Quellstring vorkommt.  Ist der
+Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber 256 Byte groß, so würde
+die veraltete Funktion strcpy (die Alternative ist strncpy), aus der
+C-Standardbibliothek, erbarmungslos bis zum Ende des Quellstrings alle Bytes
+kopieren. Auf Maschinencodeebene wird hier vermutlich nur ein Zeiger
 inkrementiert und mit einem MOV kopiert man dann schrittweise die Daten. Hier
 sollte angemerkt sein das MOV in verschiedenen Varianten vorliegt und auch in
 der Lage ist Words (16-Bit), Doublewords (32-Bit) und Quadwords (64-Bit) zu

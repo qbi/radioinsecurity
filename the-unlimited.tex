@@ -216,42 +216,48 @@ Stapel von Tellern, welchen der Stack nach dem Last-In-First-Out-Prinzip (LIFO)
 abarbeitet. So kann mit POP nur das Element entladen werden, welches zuletzt
 auf dem Stack abgelegt wurde.
 
-Der Stack wird in der Regel benutzt, um Parameter und Rückgabewerte zu
-übergeben und diverse Rücksprungadressen zu vorherigen Prozeduren vorzuhalten.
-Üblich ist auch das die lokalen Variablen einer Prozedur (Funktion), auf dem
-Stack angelegt werden. Das vorhalten der lokalen Variablen auf dem Stack
-ermöglicht es, dass verschiedene Prozeduren verschieden oft aufgerufen werden
-können.
+Der Stack wird in der Regel benutzt, um Parameter und Rückgabewerte zu übergeben
+und diverse Rücksprungadressen zu vorherigen Prozeduren vorzuhalten.  Üblich ist
+auch das die lokalen Variablen einer Prozedur (Funktion), auf dem Stack angelegt
+werden. Das vorhalten der lokalen Variablen auf dem Stack ermöglicht es, dass
+verschiedene Prozeduren verschieden oft aufgerufen werden können. Der Bereich im
+Stack, indem alle relevanten Daten einer Prozedur enthalten sind, wird als Stack
+Frame bezeichnet. Wurden mehrere Prozeduren aufgerufen, so existieren auch
+mehrere dieser Frames im Stack, für jeden Aufruf eine eigene.
 
 Der Stack Pointer (SP) ist ein Register, ähnlich dem Instruction Pointer (IP)
 und zeigt immer auf die Adresse des obersten Elements im Stack. Das Ende des
 Stacks ist eine feste Adresse und für gewöhnlich auch das Ende des kompletten
-Programms. Es gibt auch Ausnahmefälle in der Stackimplementierungen, hier
-wächst der Stack dann zu einer größeren Adresse hin. Bei gängigen Prozessoren
-ist dies dennoch nicht der Fall. Als Zusatz, um eine Variable zu referenzieren
-zu können, braucht der Stack Pointer noch den Base Pointer (BP), welcher auf
-irgend einen Wert im Stack zeigen kann. Auch der Frame Pointer (FP) kommt hier
-ggf. zum Einsatz, welcher auch in vielen Texten als Local Base Pointer (LB)
-bezeichnet wird.
+Programms. Es gibt auch Ausnahmefälle in der Stackimplementierungen, hier wächst
+der Stack dann zu einer größeren Adresse hin. Bei gängigen Prozessoren ist dies
+dennoch nicht der Fall. Als Zusatz, um eine Variable oder Parameter zu
+referenzieren zu können, braucht der Stack Pointer noch den Base Pointer (BP),
+welcher auf irgend einen Wert im Stack zeigen kann. Auch der Frame Pointer (FP)
+kommt hier ggf. zum Einsatz, welcher auch in vielen Texten als Local Base
+Pointer (LB) bezeichnet wird.
 
 Der Base Pointer wird benutzt um lokale Variablen über einen Offset zu
 referenzieren. Dieser Offset beginnt bei der Adresse, welche im Stack Pointer
-gespeichert ist. Bei weiteren Prozeduraufrufen wird der Offset aber quasi
-größer und muss verändert werden, diese Veränderungen werden in der Regel vom
-Compiler vorgenommen. Muss der Compiler die Offsetadresse im Base Pointer oft
-aktualisieren, ist das je nach dem ein nicht zu unterschätzender Aufwand. Eine
+gespeichert ist. Bei weiteren Prozeduraufrufen oder einfach nur weiteren
+PUSH-Anweisungen wird der Offset aber quasi größer und muss verändert werden,
+diese Veränderungen werden in der Regel vom Compiler vorgenommen. Muss der
+Compiler die Offsetadresse im Base Pointer oft aktualisieren, ist das je nach
+dem ein nicht zu unterschätzender Aufwand, da bei zu großen Offsets ggf. auch
+noch weitere Code ausgeführt werden muss. In Manchen Fällen ist der Compiler
+sogar nicht in der Lage diese Offset-Korrekturen fehlerfrei vorzunehmen. Eine
 andere und oft genutzte Strategie um lokale Variablen zu referenzieren ist hier
 die Benutzung des Frame Pointers. Der Zugriff auf Variablen und Parameter wird
 bei dieser Vorgehensweise mit einem Offset zu dem Wert im Frame Pointer
 ermöglicht, da der Frame Pointer nicht abhängig von dem Wert im Stack Pointer
-ist, muss auch der Compiler hier keine nachträglichen Korrekturen vornehmen.
+ist, muss auch der Compiler hier keine nachträglichen Korrekturen vornehmen. Der
+Wert im Frame Pointer ist so gewählt, dass für gewöhnlich Parameter einen
+positiven Offset besitzen und lockale Variablen einen negativen.
 
 Das erste was eine Prozedur tun muss, nachdem sie aufgerufen wurde, ist sie
 speichert den aktuellen Wert des Frame Pointers auf dem Stack und kopiert die
 aktuelle Stack Pointer Adresse in den Frame Pointer. Darauffolgend wird der
-Stack Pointer so verändert, dass genug Platz für die lokale Variablen entsteht.
-Dieser Platz, ist der berüchtigte Buffer, aus dem man ausbrechen könnte, um z.
-B. eine Rücksprungadresse zu verändern.
+Stack Pointer so verändert, dass genug Platz für die lokale Variablen entsteht,
+unser sogenannter Stack Frame wird hier angelegt.
 
 Soll eine Prozedur beendet werden, so muss der vorherige Zustand natürlich
 wieder genau hergestellt werden, Prozessoren bringen hier die Instruktionen

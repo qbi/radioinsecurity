@@ -230,7 +230,7 @@ und zeigt immer auf die Adresse des obersten Elements im Stack. Das Ende des
 Stacks ist eine feste Adresse und für gewöhnlich auch das Ende des kompletten
 Programms. Es gibt auch Ausnahmefälle in der Stackimplementierungen, hier wächst
 der Stack dann zu einer größeren Adresse hin. Bei gängigen Prozessoren ist dies
-dennoch nicht der Fall. Als Zusatz, um eine Variable oder Parameter zu
+dennoch nicht der Fall. Als Zusatz, um eine Variable oder Parameter
 referenzieren zu können, braucht der Stack Pointer noch den Base Pointer (BP),
 welcher auf irgend einen Wert im Stack zeigen kann. Auch der Frame Pointer (FP)
 kommt hier ggf. zum Einsatz, welcher auch in vielen Texten als Local Base
@@ -243,15 +243,16 @@ PUSH-Anweisungen wird der Offset aber quasi größer und muss verändert werden,
 diese Veränderungen werden in der Regel vom Compiler vorgenommen. Muss der
 Compiler die Offsetadresse im Base Pointer oft aktualisieren, ist das je nach
 dem ein nicht zu unterschätzender Aufwand, da bei zu großen Offsets ggf. auch
-noch weitere Code ausgeführt werden muss. In Manchen Fällen ist der Compiler
-sogar nicht in der Lage diese Offset-Korrekturen fehlerfrei vorzunehmen. Eine
-andere und oft genutzte Strategie um lokale Variablen zu referenzieren ist hier
-die Benutzung des Frame Pointers. Der Zugriff auf Variablen und Parameter wird
-bei dieser Vorgehensweise mit einem Offset zu dem Wert im Frame Pointer
-ermöglicht, da der Frame Pointer nicht abhängig von dem Wert im Stack Pointer
-ist, muss auch der Compiler hier keine nachträglichen Korrekturen vornehmen. Der
-Wert im Frame Pointer ist so gewählt, dass für gewöhnlich Parameter einen
-positiven Offset besitzen und lockale Variablen einen negativen.
+noch weitere Code ausgeführt werden muss. In Manchen Fällen ist der Compiler gar
+nicht in der Lage diese Offset-Korrekturen fehlerfrei vorzunehmen. Eine andere
+und oft genutzte Strategie um lokale Variablen zu referenzieren ist hier die
+Benutzung des Frame Pointers. Der Zugriff auf Variablen und Parameter wird bei
+dieser Vorgehensweise mit einem Offset zu dem Wert im Frame Pointer ermöglicht,
+da der Frame Pointer nicht abhängig von dem Wert im Stack Pointer ist, muss auch
+der Compiler hier keine nachträglichen Korrekturen vornehmen. Der Wert im Frame
+Pointer ist so gewählt, dass für gewöhnlich Parameter, Rücksprungadresse und der
+alte Frame Pointer einen positiven Offset besitzen und lockale Variablen einen
+negativen.
 
 Das erste was eine Prozedur tun muss, nachdem sie aufgerufen wurde, ist sie
 speichert den aktuellen Wert des Frame Pointers auf dem Stack und kopiert die
@@ -262,7 +263,7 @@ unser sogenannter Stack Frame wird hier angelegt.
 Soll eine Prozedur beendet werden, so muss der vorherige Zustand natürlich
 wieder genau hergestellt werden, Prozessoren bringen hier die Instruktionen
 ENTER und LEAVE bzw. LINK und UNLINK mit, bzw. kann man hier auch einfach
-wieder mit POP und verändern der Adressen den Urzustand wieder herstellen.
+wieder mit POP und verändern der Adressen den Urzustand herstellen.
 
 Diese Vorgehensweisen werden als Prozedur-Prolog bzw. -Epilog verstanden und
 können bei verschiedenen Prozessoren etwas abweichen.
@@ -299,7 +300,7 @@ diese.
 
 Nun passiert es oft, dass Quelltexte so geschrieben werden, dass Strings von dem
 ein Puffer in einen anderen Puffer byteweise kopiert werden, so lange bis ein
-Stringendezeichen (der Wert 0) in einem Byte des Quellstring vorkommt.  Ist der
+Stringendezeichen (der Wert 0) in einem Byte des Quellstring vorkommt. Ist der
 Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber 256 Byte groß, so würde
 die veraltete Funktion strcpy (die Alternative ist strncpy), aus der
 C-Standardbibliothek, erbarmungslos bis zum Ende des Quellstrings alle Bytes

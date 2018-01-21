@@ -17,17 +17,17 @@
 In der virtuellen Speicherverwaltung benutzt man für Prozesse das Flat Memory
 Model, auch bekannt als Protected Mode. Die Zusammenarbeit zwischen dem
 Prozessor und dem Betriebssystemkern ermöglichen es, dass jedem Prozess einen
-Adressraum von 4 GB (32-Bit) zur Verfügung steht. Die virtuelle Speicherverwaltung
-arbeitet nicht mehr kombiniert mit einer Segment- und einer Offsetadresse, wie
-es unter DOS üblich war, sondern man benutzt eine einzige 32-Bit große
-(Offset-)Adresse für den kompletten Adressraum.
+Adressraum von 4 GB (32-Bit) zur Verfügung steht. Die virtuelle
+Speicherverwaltung arbeitet nicht mehr kombiniert mit einer Segment- und einer
+Offsetadresse, wie es unter DOS üblich war, sondern man benutzt eine einzige
+32-Bit große (Offset-)Adresse für den kompletten Adressraum.
 
-Der Systemkern setzt beim Start einer Anwendung einen 4 GB umfassenden
+Der Kernel setzt beim Start einer Anwendung einen 4 GB umfassenden
 Adressraum, auch wenn gar keine 4 GB RAM zur Verfügung stehen. Dabei belegt
 eine Anwendung nur so viel Speicher, wie der Programmcode und die zugehörigen
 Daten benötigen. Ist noch zusätzlichen Speicher nötig, so kann
 dieser, dank der virtuellen Speicherverwaltung, nachträglich angefordert werden.
-Verwaltet wird die virtuelle Speicherverwaltung durch den Systemkern und basiert
+Verwaltet wird die virtuelle Speicherverwaltung durch den Kernel und basiert
 auf einem grundlegenden Mechanismus der Speicheradressierung des Prozessors.
 
 So ist oft nicht der gesamte virtuelle Speicher einer Anwendung im
@@ -41,8 +41,8 @@ teilt der Prozessor den virtuellen Speicher in 4 KB große Abschnitte, sogenannt
 Pages, auf.
 
 Wann immer Maschinencode auf einen Adressraum zugreifen will, berechnet der
-Prozessor zuerst einmal aus der Adresse die Nummer der Page. Er bedient sich dazu
-der Page-Tabellen auch bekannt als Page-Directorys. Über sie wird der
+Prozessor zuerst einmal aus der Adresse die Nummer der Page. Er bedient sich
+dazu der Page-Tabellen auch bekannt als Page-Directorys. Über sie wird der
 Adressraum Stück für Stück auf Pages im physischen Speicher verteilt. Der
 Prozessor gibt zwar das Format dieser Tabellen vor, aber verwaltet werden sie
 vom Betriebssystem. Der Eintrag der Page-Tabelle informiert den Prozessor auch
@@ -50,7 +50,7 @@ darüber, ob sich eine Page im physischen Speicher befindet oder ob diese
 eventuell auf eine Festplatte ausgelagert wurde. Ein Eintrag in einer
 Page-Tabelle enthält für diesen Zweck verschiedene Flags, die unter anderem
 definieren, auf welche Art auf die Pages zugegriffen werden darf (Read-Only, …).
-Sollte Speicher ausgelagert sein, so wird dies dem Systemkern gemeldet, welcher
+Sollte Speicher ausgelagert sein, so wird dies dem Kernel gemeldet, welcher
 sich dann um das Nachladen der Pages kümmert. Sollte es passieren das der
 komplette physische Speicher in Benutzung ist, so müssen erst andere Pages
 ausgelagert werden.
@@ -69,9 +69,13 @@ können in mehreren Anwendungen verwendet werden. Somit ist auch nicht zu
 vergessen, dass eine Instanz einer Bibliothek pro Prozess auch einen
 Datenbereich benötigt.
 
-Abschließend sei erwähnt das Adressen größer 3 GB dem Systemkern vorbehalten
-sind, somit ist anzunehmen, dass wenn die CPU in diesen Adressraum wechselt, sie
-auch von Ring-3 zu Ring-0 wechselt.
+Abschließend sei erwähnt das Adressen größer 3 GB dem Kernel vorbehalten sind.
+Wenn die CPU in diesen Adressraum wechselt, dann wechselt sie auch oft von einem
+in den anderen Ring. In den verschieden Ringen stehen der CPU unterschiedlich
+ausgeprägte Befehlssätze zur verfügung. So kann z. B. ein User-Prozess in Ring 3
+nicht auf Hardware zugreifen, der Kernel in Ring 0 aber sehr wohl. Die CPU
+ermittelt den Ring, in welchem sie sich gerade befindet, über die
+Supervisor-Bits im Status-Register.
 
 \section{Paging}
 
@@ -136,10 +140,9 @@ Access-Flag noch auf 0 steht. Pages, welche einen Schreibzugriff hatten, bei
 denen wird zudem das Dirty-Bit auf 1 gesetzt, weil es einfacher ist Pages zu
 laden, welche noch unverändert sind.
 
-Andere Flags realisieren ein Schutzmechanismus zwischen System-Code (Ring-0)
-und User-Code (Ring-3) oder markieren eine Page, wie oben erwähnt, als
-schreibgeschützt. Bei Missachtung dieser Flags, wird wie zu erwarten ist, eine
-Exception im Prozessor ausgelöst.
+Andere Flags realisieren ein Schutzmechanismus zwischen System-Code und
+User-Code oder markieren eine Page, wie oben erwähnt, als schreibgeschützt. Bei
+Missachtung dieser Flags, wird eine Exception im Prozessor ausgelöst.
 
 \section{Prozessspeicher}
 
@@ -180,7 +183,7 @@ Vergrößern einer Datenstruktur, wie z. B. einer verketteten Liste, nicht
 einfach hinten an gehangen werden kann. Andernfalls würde ein höherer Aufwand
 mit Zeigern und verknüpften Listen betrieben werden oder man müsste Speicher
 beim Vergrößern wandern lassen. Allozierter virtuelle Speicher des User-Codes
-steht somit dem Systemkern oder verwendeten Bibliotheken nicht zur Verfügung.
+steht somit dem Kernel oder verwendeten Bibliotheken nicht zur Verfügung.
 Benötigt man Speicher für Bäume und Listen, so kann man über die
 Heap-Funktionen Speicher Byte-genau allozieren. So kann man dem Problem
 entgehen, das große reservierte Speicherabschnitte den physikalischen Speicher
@@ -204,7 +207,7 @@ möglich, mehrere Heaps mit unterschiedlichen Größen anzulegen. Der Speicher f
 Heaps wird aus dem virtuellen Adressraum der Anwendung bezogen. Die jeweiligen
 Heaps werden dann über ein Handle (Zeiger) angesprochen. Den Prozess-Heap gibt
 es bereits beim Start eines jeden Prozesses, da der Loader in ihm Informationen
-ablegt, die der Systemkern verwalten muss. Der angefragte Speicher wird immer
+ablegt, die der Kernel verwalten muss. Der angefragte Speicher wird immer
 auf eine Page-Größe aufgerundet.
 
 \subsection{Stack}
@@ -232,8 +235,8 @@ Programms. Es gibt auch Ausnahmefälle in der Stackimplementierungen, hier wäch
 der Stack dann zu einer größeren Adresse hin. Bei gängigen Prozessoren ist dies
 dennoch nicht der Fall. Als Zusatz, um eine Variable oder Parameter
 referenzieren zu können, braucht der Stack Pointer noch den Base Pointer (BP),
-welcher auf irgend einen Wert im Stack zeigen kann. Auch der Frame Pointer (FP)
-kommt hier ggf. zum Einsatz, welcher auch in vielen Texten als Local Base
+welcher auf irgend einen Wert im Stack zeigen kann. Auch als Frame Pointer (FP)
+kommt er hier ggf. zum Einsatz, welcher auch in vielen Texten als Local Base
 Pointer (LB) bezeichnet wird.
 
 Der Base Pointer wird benutzt um lokale Variablen über einen Offset zu
@@ -246,13 +249,13 @@ dem ein nicht zu unterschätzender Aufwand, da bei zu großen Offsets ggf. auch
 noch weitere Code ausgeführt werden muss. In Manchen Fällen ist der Compiler gar
 nicht in der Lage diese Offset-Korrekturen fehlerfrei vorzunehmen. Eine andere
 und oft genutzte Strategie um lokale Variablen zu referenzieren ist hier die
-Benutzung des Frame Pointers. Der Zugriff auf Variablen und Parameter wird bei
-dieser Vorgehensweise mit einem Offset zu dem Wert im Frame Pointer ermöglicht,
-da der Frame Pointer nicht abhängig von dem Wert im Stack Pointer ist, muss auch
-der Compiler hier keine nachträglichen Korrekturen vornehmen. Der Wert im Frame
-Pointer ist so gewählt, dass für gewöhnlich Parameter, Rücksprungadresse und der
-alte Frame Pointer einen positiven Offset besitzen und lockale Variablen einen
-negativen.
+Benutzung des Base Pointers als Frame Pointers. Der Zugriff auf Variablen und
+Parameter wird bei dieser Vorgehensweise mit einem Offset zu dem Wert im Frame
+Pointer ermöglicht, da der Frame Pointer nicht abhängig von dem Wert im Stack
+Pointer ist, muss auch der Compiler hier keine nachträglichen Korrekturen
+vornehmen. Der Wert im Frame Pointer ist so gewählt, dass für gewöhnlich
+Parameter, Rücksprungadresse und der alte Frame Pointer einen positiven Offset
+besitzen und lockale Variablen einen negativen.
 
 Das erste was eine Prozedur tun muss, nachdem sie aufgerufen wurde, ist sie
 speichert den aktuellen Wert des Frame Pointers auf dem Stack und kopiert die

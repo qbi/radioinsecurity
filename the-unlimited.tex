@@ -72,7 +72,7 @@ Datenbereich benötigt.
 Abschließend sei erwähnt das Adressen größer 3 GB dem Kernel vorbehalten sind.
 Wenn die CPU in diesen Adressraum wechselt, dann wechselt sie auch oft von einem
 in den anderen Ring. In den verschieden Ringen stehen der CPU unterschiedlich
-ausgeprägte Befehlssätze zur verfügung. So kann z. B. ein User-Prozess in Ring 3
+ausgeprägte Befehlssätze zur Verfügung. So kann z. B. ein User-Prozess in Ring 3
 nicht auf Hardware zugreifen, der Kernel in Ring 0 aber sehr wohl. Die CPU
 ermittelt den Ring, in welchem sie sich gerade befindet, über die
 Supervisor-Bits im Status-Register.
@@ -150,19 +150,20 @@ Ein Prozess ist grundlegend in 3 Regionen aufgebaut. Diese Regionen sind das
 Codesegment, das Datensegment und der Stack. Diese Segmente ergeben sich in der
 Regel direkt durch das Parsen einer ausführbaren Datei.
 
-\subsection{Code-/Textsegment}
+\subsection{Textsegment}
 
-Das Codesegment, welches oft auch als Textsegment betitelt wird, beinhaltet,
-wie der Name schon sagt, den auszuführenden Code und ist schreibgeschützt. Ein
-Versuch, hier Daten zu ändern, würde zu einer Speicherzugriffsverletzung
-führen. Das Codesegment beginnt in der Regel im niedrigen Adressraum.
+Das Textsegment beinhaltet das Codesegment für den auszuführenden Code und
+Kostanten. Konstanten sind Daten, welche zur Laufzeit des Programms nicht
+verändert werden dürfen. Das komplette Textsegment ist schreibgeschützt. Ein
+Versuch, hier Daten zu ändern, würde zu einer Speicherzugriffsverletzung führen.
+Das Textsegment beginnt in der Regel im niedrigen Adressraum.
 
 \subsection{Datensegment}
 
 Im Datensegment sind initialisierte und nicht initialisierte globale Variablen
-angesiedelt, sowie Konstanten. Der dynamische Speicher wird hier auch
-hinzugezählt, dieser Bereich ergibt sich aber nicht durch das Parsen einer
-ausführbaren Datei.
+angesiedelt. Der dynamische Speicher wird hier auch hinzugezählt, dieser Bereich
+ergibt sich aber nicht durch das Parsen einer ausführbaren Datei sonders erst
+zur Laufzeit.
 
 \subsubsection{Dynamischer Speicher}
 
@@ -261,7 +262,12 @@ Das erste was eine Prozedur tun muss, nachdem sie aufgerufen wurde, ist sie
 speichert den aktuellen Wert des Frame Pointers auf dem Stack und kopiert die
 aktuelle Stack Pointer Adresse in den Frame Pointer. Darauffolgend wird der
 Stack Pointer so verändert, dass genug Platz für die lokale Variablen entsteht,
-unser sogenannter Stack Frame wird hier angelegt.
+unser sogenannter Stack Frame wird hier angelegt. Oft fällt die größe des Stack
+Frames etwas größer aus als die Summe der Bytes der lokalen Variablen, bei einer
+32-Bit Architektur ist ein Element des Stacks genau 4 Bytes groß. Das hat den
+Sinn, das Werte in die Register der CPU passend abgelegt werden können und nicht
+zusätzlicher Code erzeugt werden muss, der z. B. Werte zweier Variablen in einem
+Register erkennen und verwalten muss.
 
 Soll eine Prozedur beendet werden, so muss der vorherige Zustand natürlich
 wieder genau hergestellt werden, Prozessoren bringen hier die Instruktionen
@@ -307,17 +313,15 @@ Stringendezeichen (der Wert 0) in einem Byte des Quellstring vorkommt. Ist der
 Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber 256 Byte groß, so würde
 die veraltete Funktion strcpy (die Alternative ist strncpy), aus der
 C-Standardbibliothek, erbarmungslos bis zum Ende des Quellstrings alle Bytes
-kopieren. Auf Maschinencodeebene wird hier vermutlich nur ein Zeiger
+kopieren. Auf Maschinencodeebene wird hier vermutlich nur ein Register
 inkrementiert und mit einem MOV kopiert man dann schrittweise die Daten. Hier
 sollte angemerkt sein das MOV in verschiedenen Varianten vorliegt und auch in
 der Lage ist Words (16-Bit), Doublewords (32-Bit) und Quadwords (64-Bit) zu
 kopieren.
 
 Passiert zur Laufzeit ein solcher Fehler, so bekommt man oft, ein Segmentation
-Fault. Die Adresse, welche in der lokalen Quellzeigervariable steht, wird mit
-Bytes überschrieben und somit überschreibt dieser Fehler sogar die Quelladresse
-von strcpy, danach versucht MOV, Daten von einer Adresse zu lesen, die nicht
-zur Verfügung steht. 
+Fault. Die Rücksprungadresse, welche RET dann benutzt, wurde hier vermutlich mit
+einem Wert überschreiben der nicht existiert.
 
 Findet man nun solch einen Fehler in ein Programm, so kann man durch die
 richtige Anzahl von Bytes, so viel vom Stack überschreiben, das nur die

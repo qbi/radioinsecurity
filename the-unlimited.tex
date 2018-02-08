@@ -347,7 +347,18 @@ fortgesetzt.
 
 \section{Use after Free}
 
-\section{Shellcode (Payload)}
+\section{Shell Code (Payload)}
+
+Als Shell Code bezeichnet man die Instruktionen, welche man als fremden Code
+ausführt, nachdem man die Rücksprungsadresse einer Prozedur verändert hat. In
+den meisten Fällen möchte man mit diesem Code eine Shell remote verfügbar
+machen, weil man über eine Shell die Möglichkeit hat beliebige andere Programme
+zu starten. Da die meisten Programme keinen Code mitbringen, welche eine Shell
+startet, und man zu diesem hin springen könnte, so muss man eigenen Code
+platzieren. Eigenen Code platziert man einfach, indem man diesen in den Puffer
+schreibt, über dessen Grenzen wir hinaus schreiben, um die Rücksprungsadresse zu
+verändern. Das bedeutet dass die Rücksprungsadresse genau auf das erste Segment
+im Puffer zeigen muss.
 
 \chapter{Gegenmaßnahmen}
 

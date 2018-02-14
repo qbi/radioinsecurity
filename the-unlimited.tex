@@ -351,14 +351,32 @@ fortgesetzt.
 
 Als Shell Code bezeichnet man die Instruktionen, welche man als fremden Code
 ausführt, nachdem man die Rücksprungsadresse einer Prozedur verändert hat. In
-den meisten Fällen möchte man mit diesem Code eine Shell remote verfügbar
-machen, weil man über eine Shell die Möglichkeit hat beliebige andere Programme
-zu starten. Da die meisten Programme keinen Code mitbringen, welche eine Shell
-startet, und man zu diesem hin springen könnte, so muss man eigenen Code
-platzieren. Eigenen Code platziert man einfach, indem man diesen in den Puffer
-schreibt, über dessen Grenzen wir hinaus schreiben, um die Rücksprungsadresse zu
-verändern. Das bedeutet dass die Rücksprungsadresse genau auf das erste Segment
-im Puffer zeigen muss.
+den meisten Fällen möchte man mit diesem Code eine Shell, im besten Fall von
+außen (remote), verfügbar machen. Über eine Shell hat man die Möglichkeit
+beliebige andere Programme zu starten und Einstellungen zu setzen. Da die
+meisten Programme keinen Code mitbringen, der eine Shell startet und man zu
+diesem hin springen könnte, so muss man eigenen Code platzieren. Eigenen Code
+platziert man, indem man diesen in den Puffer schreibt, über dessen Grenzen wir
+hinaus schreiben um die Rücksprungsadresse zu verändern. Das bedeutet dass die
+Rücksprungsadresse genau auf das erste Segment im Puffer zeigen muss. Code,
+welche ein anderes Programm startet, wie z.B. eine Shell, wird in C vermutlich
+mit einer der exec Systemfunktionen realisiert. Systemfunktionen sind quasi
+Software-Interrupts. Software-Interrupts sind Codeeinheiten im Kernel, die man
+benutzen kann und um verschiedene Dinge zu tun, wie z.B. der Zugriff auf
+Dateien, das erzeugen von Signalen oder auch das Starten anderer Programme.
+Bevor eine dieser Codeeinheiten im Kernel ausgeführt wird, überprüft dieser in
+der Regel ob ein Prozess oder Benutzer dazu berechtigt ist. Um ein
+Software-Interrupt zu benutzen muss man nur einen Wert in einem Register der CPU
+ablegen, um die jeweilige Funktion zu spezifizieren und danach wird einfach der
+Prozessorbefehl INT mit einem bestimmten Wert aufgerufen. Dies hat zur Folge,
+dass in der Software-Interrupt-Tabelle anhand des Wertes im Register
+nachgeschaut wird, wo im Speicher sich die Systemfunktion befindet. Darauf
+folgend wird diese Funktion dann ausgeführt. Somit ist klar, dass uns schon eine
+Fülle an brauchbaren Funktionen zur Verfügung steht, welche wir mit wenigen
+Prozessorbefehlen ausführen können. Somit werden wir in die Lage versetzt, eine
+Shell zu starten, indem wir einfach eine Pfadangabe auf die Shell als String in
+den Speicher ablegen und die Startadresse dieses String der Systemfunktion zum
+Ausführen von Programmen als Parameter übergeben. Konkret bedeutet das
 
 \chapter{Gegenmaßnahmen}
 

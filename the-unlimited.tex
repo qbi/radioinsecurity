@@ -303,9 +303,9 @@ Adresse des Befehls, welcher sequentiell quasi direkt nach dem CALL ausgeführt
 würde als Rücksprungsadresse auf dem Stack abzulegen und das Register des
 Instruction Pointer auf die Anfangsadresse der neuen Prozedur zu setzen, ähnlich
 wie mit einem MOV. Ein direktes Ändern des Instruction Pointer ist MOV aber
-nicht erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt RET die
-Rücksprungsadresse vom Stack und ändert den Instruction Pointer wieder auf genau
-diese.
+nicht erlaubt. Um zum ursprünglichen Code zurück zu gelangen, entfernt RET den
+aktuellen Stackframe inklusive der Rücksprungsadresse vom Stack und ändert dabei
+den Instruction Pointer wieder auf genau diese Adresse.
 
 Nun passiert es oft, dass Quelltexte so geschrieben werden, dass Strings von dem
 einen Puffer in einen anderen Puffer byteweise kopiert werden, so lange bis ein
@@ -314,10 +314,10 @@ Zielpuffer z. B. aber nur 16 Byte groß, die Quelle aber 256 Byte groß, so wü
 die veraltete Funktion strcpy (die Alternative ist strncpy), aus der
 C-Standardbibliothek, erbarmungslos bis zum Ende des Quellstrings alle Bytes
 kopieren. Auf Maschinencodeebene wird hier vermutlich nur ein Register
-inkrementiert und mit einem MOV kopiert man dann schrittweise die Daten. Hier
-sollte angemerkt sein das MOV in verschiedenen Varianten vorliegt und auch in
-der Lage ist Words (16-Bit), Doublewords (32-Bit) und Quadwords (64-Bit) zu
-kopieren.
+inkrementiert oder dekrementiert und mit einem MOV kopiert man dann schrittweise
+die Daten. Hier sollte angemerkt sein das MOV in verschiedenen Varianten
+vorliegt und auch in der Lage ist Words (16-Bit), Doublewords (32-Bit) und
+Quadwords (64-Bit) zu kopieren.
 
 Passiert zur Laufzeit ein solcher Fehler, so bekommt man oft, ein Segmentation
 Fault. Die Rücksprungadresse, welche RET dann benutzt, wurde hier vermutlich mit
@@ -354,42 +354,41 @@ diesem hin springen könnte, so muss man eigenen Code platzieren.
 Eigenen Code platziert man, indem man diesen in den Puffer schreibt, über dessen
 Grenzen wir hinaus schreiben um die Rücksprungsadresse zu verändern. Das
 bedeutet dass die Rücksprungsadresse genau auf das erste Segment des Puffers
-zeigen muss.
+zeigen sollte.
 
 Code, welcher ein anderes Programm startet, wie z.B. eine Shell, wird in C
 vermutlich mit einer der exec Systemfunktionen realisiert. Systemfunktionen auch
 bekannt als Systemaufrufe (systemcalls/syscalls) werden in der Regel über
-Softwareinterrupts (INT) oder andere spezielle CPU-Befehle (SYSENTER/SYSRET)
+Softwareinterrupts (INT) oder andere spezielle CPU-Befehle (SYSENTER/SYSCALL)
 realisiert. Ein Softwareinterrupt (auch Exception genannt) unterbricht die
-Programmausführung im Benutzer-Modus und erzwingt das Ausführen eines
-Exception-Handlers im Kernel-Modus.
+Programmausführung im Benutzer-Modus (Ring-3) und erzwingt das Ausführen eines
+Exception-Handlers im Kernel-Modus (Ring-0). In Ring-0 steht der komplette
+Befehlssatz und der gesamte Speicherbereich der CPU zur Verfügung. Aus
+Sicherheitgründen laufen normale Prozesse deswegen in Ring-3.
 
-Systemaufrufe sind also quasi eine Sammlung von Codeeinheiten im Kernel, die man
-benutzen kann und um verschiedene Dinge zu tun, wie z.B. der Zugriff auf
-Dateien, das erzeugen von Signalen oder auch das Starten anderer Programme. Hier
-findet ein Kontextwechsel statt, da ein normaler Prozess nicht selbst auf
-Hardware zugreifen darf. Das bedeutet, wie oben schon erwähnt, dass man den
-bedroffenden Prozess unterbricht und die Kontrolle der CPU dem Kernel übergeben
-wird. Bevor eine dieser Codeeinheiten im Kernel ausgeführt wird, überprüft
-dieser in der Regel ob ein Prozess oder Benutzer auch dazu berechtigt ist. Der
-Kernel beherbergt eine Liste aller ihm bekannten Systemaufrufe, die so genannte
-System Call Table. Jedem Systemaufruf wird dort eine eindeutige Nummer und eine
-Kernel-interne Funktion zugeordnet, die für die eigentliche Erledigung der
-erforderlichen Aufgaben zuständig ist. Das heisst das Sytemaufruf mehrere
-Systemfunktionen enthalten kann.
+Systemaufrufe sind eine Sammlung von Codeeinheiten im Kernel, die man benutzen
+kann und um verschiedene Dinge zu tun, wie z. B. der Zugriff auf Dateien, das
+erzeugen von Signalen oder auch das Starten anderer Programme. Hier findet ein
+Kontextwechsel statt, da ein normaler Prozess z. B. nicht selbst auf Hardware
+zugreifen darf. Das bedeutet, wie oben schon erwähnt, dass man den bedroffenden
+Prozess unterbricht und die Kontrolle der CPU dem Kernel übergeben wird. Bevor
+eine dieser Codeeinheiten im Kernel ausgeführt wird, überprüft dieser in der
+Regel ob ein Prozess oder Benutzer auch dazu berechtigt ist. Der Kernel
+beherbergt eine Liste aller ihm bekannten Systemaufrufe, die so genannte System
+Call Table, welche als Sprungtabelle genutzt wird. Jedem Systemaufruf wird dort eine eindeutige Nummer zugeordnet.
 
-Um einen Systemaufruf durchzuführen, wird die Nummer der gewünschten Funktion in
-das AX-Register der CPU geschrieben und anschließend der zuständige
-Softwareinterrupt, über sseine Nummer, auf der CPU ausgelöst. Für weitere
-Argumente an den Systemaufruf, aber auch Rückgabewerte, werden auch
-CPU-Registern benutzt.
+Um einen Systemaufruf durchzuführen, wird die Nummer des gewünschten Aufrufs in
+das EAX-Register der CPU geschrieben und anschließend der zuständige
+Softwareinterrupt, unter Linux ist das in der Regel 80h, über seine Nummer
+ausgelöst. Für Argumente an den Systemaufruf, aber auch Rückgabewerte, benutzt
+man hier auch die Register der CPU.
 
 Somit ist klar, dass uns eine Fülle an brauchbaren Funktionen zur Verfügung
 steht, welche wir mit wenigen Prozessorbefehlen ausführen können. Durch
 Systemaufrufe werden wir in die Lage versetzt, eine Shell zu starten, indem wir
-einfach eine Pfadangabe auf dieShellbinärdatei als String im Speicher ablegen
-und die Startadresse des Strings der exec Systemfunktion als Parameter
-übergeben. Konkret bedeutet das
+einfach eine Pfadangabe auf die Shellbinärdatei als String im Speicher ablegen
+und die Startadresse des Strings dem exec Systemaufruf als Parameter übergeben.
+Konkret bedeutet das
 
 \chapter{Gegenmaßnahmen}
 

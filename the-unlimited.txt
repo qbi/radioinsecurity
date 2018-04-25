@@ -369,7 +369,7 @@ Sicherheitgründen laufen normale Prozesse deswegen in Ring-3, wo nur ein Teil
 des Befehlssatzes und des Speichers (die Verwaltung des virtuellen Speichers
 kann nur in Ring-0 vorgenommen werden) zur Verfügung stehen. Die Nutzung von
 Privilegierungsebenen ist sinnvoll, um die Hardware zu abstrahieren und um
-Prozesse voneinander abzuschotten zu können. In CPU und ggf. MMU müssen
+Prozesse voneinander abschotten zu können. In CPU und ggf. MMU müssen
 Schaltungen bestehen, die bei jedem Befehl bzw. Speicherzugriff prüfen, ob
 dieser im aktuellen Ring erlaubt ist. Falls ein Prozess etwas nicht Erlaubtes
 durchführen möchte, wird er unterbrochen und eine Betriebssystemroutine
@@ -458,5 +458,3 @@ Konkret bedeutet das
 == Finden von Overflows
 
 == Vermeiden von Overflows
-
-\end{document}

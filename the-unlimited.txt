@@ -1,7 +1,8 @@
 The Unlimited
 =============
-
-:Date:
+No Buddy
+:date:
+:toc:
 
 == Speicher
 
@@ -318,15 +319,21 @@ einem Wert überschreiben der nicht existiert.
 
 === Global-Based Buffer Overflow
 
+-
+
 === Heap-Based Buffer Overflow
 
+-
+
 === Stackoverflow
-%https://blog.fefe.de/?ts=a7b7880f
+https://blog.fefe.de/?ts=a7b7880f
 Sollte der Platz zwischen Datensegment und Stack einmal zu gering werden, so
 wird der Prozess angehalten und kurz darauf mit zusätzlichem Speicher
 fortgesetzt.
 
 === Integeroverflow
+
+-
 
 === Payload (Shell Code)
 
@@ -404,57 +411,109 @@ Konkret bedeutet das
 
 === Format-String-Attacke
 
+-
+
 === Return to Libc
+
+-
 
 === Use after Free
 
+-
+
 == Gegenmaßnahmen
+
+-
 
 === NX-Bit
 
+-
+
 ==== Angriffe NX-Bit
+
+-
 
 === ASLR
 
+-
+
 ==== KASLR
 
+-
+
 ==== KARL
-%https://heise.de/-3767821
+https://heise.de/-3767821
 
 ==== KAISER/KPTI (Kernel- und User-Space "page table splitting")
-%https://heise.de/-3931562
-%https://glm.io/131938
+https://heise.de/-3931562
+https://glm.io/131938
 
 ==== PIE-Flag
 
+-
+
+
 ==== Angriffe ASLR
+
+-
 
 ===== Heap-Spraying
 
+-
+
 ===== Double-Page-Fault
+
+-
 
 ===== Sidechannel-Angriff
 
+-
+
 === Stack-Cookie
+
+-
 
 === Shadow Stack
 
+-
+
 === Non Excutable Stack
+
+-
 
 === Canary
 
+-
+
 === CFI
+
+-
 
 === Stack Smashing Protector (ehemals ProPolice)
 
+-
+
 === Stack Guard
 
-=== Syscall-Filtering (https://en.wikipedia.org/wiki/Seccomp)
+-
+
+=== Syscall-Filtering - https://en.wikipedia.org/wiki/Seccomp
+
+-
 
 === Sandboxing/Container (Chroot, LXC, Jails, Apps, Browser, Java, ...)
 
+-
+
 ==== Jailbreak
+
+-
 
 == Finden von Overflows
 
+-
+
 == Vermeiden von Overflows
+
+-
+

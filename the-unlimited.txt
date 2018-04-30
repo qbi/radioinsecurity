@@ -347,10 +347,10 @@ werden, z. B. beim einschleussen eines Backdoors. Es gibt Payloads zur
 Befehlsausführung, sowie zum erzeugen einer Shell oder sogar das Ausführen sehr
 komplexer Angriffsprogramme, es können sogar verschiedene Payloads frei
 kombiniert werden. Wichtig hierbei ist, das Payloads immer abhängig vom
-Betriebsystem und der Architektur des Opfersystems funktionieren. Desweiteren
-können Payloads verschiedene Verbindungswege nutzen, entweder es wartet auf eine
-eingehende Verbindung des Angeifers (Payload Bind) oder es verbindet sich selbst
-zu einer vorher definierten Adresse (Payload Reverse).
+Betriebsystem und der Architektur des angegriffenen Systems funktionieren.
+Desweiteren können Payloads verschiedene Verbindungswege nutzen, entweder es
+wartet auf eine eingehende Verbindung des Angeifers (Payload Bind) oder es
+verbindet sich selbst zu einer vorher definierten Adresse (Payload Reverse).
 
 Oft möchte man mit diesem Code eine Shell, im besten Fall von außen, verfügbar
 machen. Über eine Shell hat man dann die Möglichkeit beliebige andere Programme
